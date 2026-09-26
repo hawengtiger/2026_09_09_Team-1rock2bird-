@@ -32,7 +32,7 @@ public class QuitScreenUI : MonoBehaviour
 
     public void QuitGame()
     {
-        SoundManager.Instance.MuteMusic();
+        SoundManager.Instance.StopMusic();
         blackPanel.gameObject.SetActive(true);
 
         Color c = blackPanel.color;
