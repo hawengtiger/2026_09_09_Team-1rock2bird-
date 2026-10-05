@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
 
     // 현재 범위 내에서 사용 가능한 가장 가까운 PickupItem(없으면 null)
     private PickupItem nearestPickup;
+    private Interction_obj nearestInterction;
 
     private void Awake()
     {
@@ -58,19 +59,24 @@ public class PlayerController : MonoBehaviour
 
         // 주변 아이템 검색 (매 프레임 최신화)
 
-        // E 키 입력으로 수집 시도
-        if (Keyboard.current.eKey.wasPressedThisFrame)
+        // F 키 입력으로 수집 시도
+        if (Keyboard.current.fKey.wasPressedThisFrame)
         {
-            Debug.Log("아이템 탐색 키 입력");
+            Debug.Log("아이템 탐색 / 상호작용 키 입력");
             nearestPickup = FindNearestPickup();
             if (nearestPickup != null)
             {
                 nearestPickup.Collect();
             }
+            nearestInterction = FindNearestInteraction();
+            if (nearestInterction != null)
+            {
+                nearestInterction.Interact();
+            }
         }
     }
 
-    private void FixedUpdate()
+    private void FixedUpdate() // 외부에서 이동 입력을 적용할 때 사용, canMove이 false면 입력을 무시합니다.
     {
         // Rigidbody2D를 이용한 이동
         rb.linearVelocity = new Vector2(
@@ -78,9 +84,8 @@ public class PlayerController : MonoBehaviour
             rb.linearVelocity.y
         );
     }
-    // 외부에서 이동 입력을 적용할 때 사용
-    // canMove이 false면 입력을 무시합니다.
-    public void ApplyMove(float x)
+    
+    public void ApplyMove(float x) // 반경 내의 itemTag태그, PickupItem 컴포넌트, canPickup == true인 가장 가까운 아이템을 반환
     {
         if (!canMove)
         {
@@ -92,8 +97,8 @@ public class PlayerController : MonoBehaviour
         moveInput.x = x;
     }
 
-    // 반경 내에서 태그가 itemTag이고, PickupItem 컴포넌트가 있으며, canPickup == true 인 가장 가까운 아이템을 반환
-    private PickupItem FindNearestPickup()
+    
+    private PickupItem FindNearestPickup()// 반경 내에서 태그가 itemTag이고, PickupItem 컴포넌트가 있으며, canPickup == true 인 가장 가까운 아이템을 반환
     {
         Collider2D[] cols = Physics2D.OverlapCircleAll(transform.position, pickupRadius);
         PickupItem best = null;
@@ -118,9 +123,35 @@ public class PlayerController : MonoBehaviour
 
         return best;
     }
+    
+    private Interction_obj FindNearestInteraction() // 반경 내에서 태그가 Object이고, Interction_obj 컴포넌트가 있는 가장 가까운 오브젝트를 반환
+    {
+        Collider2D[] cols = Physics2D.OverlapCircleAll(transform.position, pickupRadius);
+        Interction_obj best = null;
+        float bestSqr = float.MaxValue;
 
-    // 씬 뷰용 Gizmo (선택)
-    private void OnDrawGizmosSelected()
+        foreach (var c in cols)
+        {
+            if (c == null) continue;
+            // 태그가 "Object"인 것만 검사
+            if (!c.CompareTag("Object")) continue;
+
+            // Interction_obj은 콜라이더에 붙어있을 수도, 부모 오브젝트에 있을 수도 있으므로 GetComponentInParent 사용
+            var interaction = c.GetComponentInParent<Interction_obj>();
+            if (interaction == null) continue;
+
+            float dsq = (interaction.transform.position - transform.position).sqrMagnitude;
+            if (dsq < bestSqr)
+            {
+                bestSqr = dsq;
+                best = interaction;
+            }
+        }
+
+        return best;
+    }
+
+    private void OnDrawGizmosSelected() // 씬 뷰용 Gizmo (선택)
     {
         if (!showPickupGizmo) return;
         Gizmos.color = Color.yellow;
