@@ -310,5 +310,9 @@ MonoBehaviour:
   sfxSounds:
   - name: BT
     clip: {fileID: 8300000, guid: 039ecf7af2462ba4b94df05ffa43405c, type: 3}
+  - name: Start
+    clip: {fileID: 8300000, guid: d5d7e03202d67fc46a114bf8b2d13121, type: 3}
+  - name: Setting
+    clip: {fileID: 8300000, guid: 01ce0b3eabafb254f8cd5d6c60fb1cd6, type: 3}
   musicSource: {fileID: 3633061369831715444}
   sfxSource: {fileID: 6436592022395909622}

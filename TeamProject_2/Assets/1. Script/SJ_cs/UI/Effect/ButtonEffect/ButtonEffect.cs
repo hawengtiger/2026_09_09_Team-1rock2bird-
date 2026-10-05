@@ -4,8 +4,10 @@ using UnityEngine.EventSystems;
 
 public class ButtonEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+    [Header("버튼 이미지")]
     public Image fillImage;
 
+    [Header("이펙트 속도")]
     public float highlightSpeed = 3f;
 
     private bool isHighlight;
