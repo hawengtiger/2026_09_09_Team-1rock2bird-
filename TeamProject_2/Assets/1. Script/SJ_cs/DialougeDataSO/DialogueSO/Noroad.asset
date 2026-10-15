@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69a9ee36389921a4dbfc4f3f907dee2d, type: 3}
+  m_Name: Noroad
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueDataSO
+  dialogues:
+  - .....
+  - "\uB098\uB3C4 \uCC38... \uBB50\uD558\uB294 \uAC74\uC9C0.. \uC5EC\uAE34 \uC8FC\uBC29\uC774
+    \uC544\uB2C8\uC796\uC544..."

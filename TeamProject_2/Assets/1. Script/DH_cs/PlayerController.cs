@@ -21,23 +21,31 @@ public class PlayerController : MonoBehaviour
     // 현재 범위 내에서 사용 가능한 가장 가까운 PickupItem(없으면 null)
     private PickupItem nearestPickup;
 
+    private TextTyping typing;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        typing = FindAnyObjectByType<TextTyping>();
     }
 
     private void Update()
     {
+
         // 이동 입력
         moveInput.x = 0f;
 
-        if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
+
+        if (!typing.darkUIEffect.isStory)
         {
-            moveInput.x = -1f;
-        }
-        if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
-        {
-            moveInput.x = 1f;
+            if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
+            {
+                moveInput.x = -1f;
+            }
+            if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
+            {
+                moveInput.x = 1f;
+            }
         }
 
         // 캐릭터 방향 전환
