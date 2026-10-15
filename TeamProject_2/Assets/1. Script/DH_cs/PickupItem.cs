@@ -2,11 +2,15 @@ using UnityEngine;
 
 public class PickupItem : MonoBehaviour
 {
+    public TextTyping textTyping;
+    public DialogueDataSO dialogue;
+
     public string itemName = "testitem";
     public GameObject PickupState;
 
     void Start()
     {
+        textTyping = FindAnyObjectByType<TextTyping>();
         PickupState.SetActive(false);
     }
 
@@ -34,6 +38,12 @@ public class PickupItem : MonoBehaviour
     public void Collect()
     {
         Debug.Log(itemName + " 획득");
+
+        if (itemName == "testitem")
+        {
+            textTyping.StartDialogue(dialogue);
+        }
+
         Destroy(gameObject);
     }
 }
