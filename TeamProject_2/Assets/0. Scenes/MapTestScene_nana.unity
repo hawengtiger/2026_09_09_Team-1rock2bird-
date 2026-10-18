@@ -2910,7 +2910,7 @@ GameObject:
   m_Component:
   - component: {fileID: 463222264}
   m_Layer: 0
-  m_Name: Map_Block (6)
+  m_Name: Map_GuardianRoom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3581,7 +3581,7 @@ GameObject:
   m_Component:
   - component: {fileID: 546877750}
   m_Layer: 0
-  m_Name: Map_Block
+  m_Name: Map_LivingRoom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4655,7 +4655,7 @@ GameObject:
   m_Component:
   - component: {fileID: 696859040}
   m_Layer: 0
-  m_Name: Map_Block (5)
+  m_Name: Map_ Clinic
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7301,7 +7301,7 @@ GameObject:
   m_Component:
   - component: {fileID: 978296652}
   m_Layer: 0
-  m_Name: Map_Block (1)
+  m_Name: Map_PlayerRoom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8538,7 +8538,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1322109896}
   m_Layer: 0
-  m_Name: Map_Block (4)
+  m_Name: Map_VeterinaryHospital
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9350,7 +9350,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1463142302}
   m_Layer: 0
-  m_Name: Map_Block (3)
+  m_Name: Map_Walkways
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11030,7 +11030,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1712382026}
   m_Layer: 0
-  m_Name: Map_Block (2)
+  m_Name: Map_Kitchen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
