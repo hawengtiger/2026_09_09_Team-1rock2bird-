@@ -12,7 +12,7 @@ public class PerspectivePuzzle : MonoBehaviour
     [Header("Puzzle Settings")]
     public float correctRotation = 0f;  // 정답이 되는 Y축 각도
     public float tolerance = 3f;        // 정답으로 인정할 오차 범위 
-    
+    public float minStartDistance = 60f;
     private bool isPuzzleActive = false;
     private bool isSolved = false;
 
@@ -20,10 +20,17 @@ public class PerspectivePuzzle : MonoBehaviour
     {
         // 시작할 때 퍼즐 UI와 퍼즐 오브젝트(컨테이너)를 모두 숨김
         if (puzzleUI != null) puzzleUI.SetActive(false);
-        if (puzzleContainer != null) puzzleContainer.gameObject.SetActive(false); 
-        
+        if (puzzleContainer != null) puzzleContainer.gameObject.SetActive(false);
+
+        dragBar.minValue = 0f;
+        dragBar.maxValue = 360f;
         dragBar.onValueChanged.AddListener(OnSliderMoved);
-        dragBar.value = dragBar.minValue; 
+
+        // 시작 각도를 랜덤으로 설정
+        float startValue = GetRandomStartAngle();
+        dragBar.SetValueWithoutNotify(startValue);
+        if (puzzleContainer != null)
+            puzzleContainer.localEulerAngles = new Vector3(0, startValue, 0);
     }
 
 void Update()
@@ -45,7 +52,17 @@ void Update()
             }
         }
     }
-   // 퍼즐과 플레이어의 상태를 반대로 켜고 끄는 함수
+
+    private float GetRandomStartAngle()
+    {
+        float minDist = Mathf.Clamp(minStartDistance, tolerance + 1f, 179f);
+        float offset = Random.Range(minDist, 360f - minDist);
+        return Mathf.Repeat(correctRotation + offset, 360f);
+    }
+
+
+
+    // 퍼즐과 플레이어의 상태를 반대로 켜고 끄는 함수
     private void TogglePuzzleMode(bool active)
     {
         if (puzzleUI != null) puzzleUI.SetActive(active);
@@ -65,14 +82,14 @@ void Update()
 
     private void CheckSolveCondition(float currentRotation)
     {
-        if (Mathf.Abs(currentRotation - correctRotation) <= tolerance)
+        if (Mathf.Abs(Mathf.DeltaAngle(currentRotation, correctRotation)) <= tolerance)
         {
             isSolved = true;
             
             puzzleContainer.localEulerAngles = new Vector3(0, correctRotation, 0);
-            dragBar.value = correctRotation;
-            dragBar.interactable = false; 
-            
+            dragBar.SetValueWithoutNotify(Mathf.Repeat(correctRotation, 360f));
+            dragBar.interactable = false;
+
             Debug.Log("퍼즐 완성! F를 눌러서 닫고 플레이어로 돌아가세요.");
         }
     }
