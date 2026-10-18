@@ -22,6 +22,10 @@ public class RoomPortal : MonoBehaviour
     {
         if (collidedObj == null || PortalEnd == null) return;
 
+        // 페이드 진행 중에는 추가 텔레포트 방지
+        if (FadeManager.Instance == null || FadeManager.Instance.isFading)
+            return;
+
         GameObject targetObj = null;
 
         if (playerObject != null)
@@ -49,34 +53,47 @@ public class RoomPortal : MonoBehaviour
 
         if (targetObj == null) return;
 
-        // 목적지 설정 (PortalEnd 위치에 오프셋을 더함)
-        Vector3 dest = PortalEnd.position + arrivalOffset;
+        // 페이드 아웃
+        FadeManager.Instance.FadeOut(0.5f, DG.Tweening.Ease.InQuad, () =>
+        {
+            // 목적지 설정 (PortalEnd 위치에 오프셋을 더함)
+            Vector3 dest = PortalEnd.position + arrivalOffset;
 
-        // Rigidbody2D/3D가 있으면 물리 위치와 속도를 초기화, 없으면 Transform으로 설정
-        var rb2d = targetObj.GetComponent<Rigidbody2D>();
-        if (rb2d != null)
-        {
-            rb2d.position = new Vector2(dest.x, dest.y);
-            rb2d.linearVelocity = Vector2.zero;
-        }
-        else
-        {
-            var rb3 = targetObj.GetComponent<Rigidbody>();
-            if (rb3 != null)
+            // Rigidbody2D/3D가 있으면 물리 위치와 속도를 초기화, 없으면 Transform으로 설정
+            var rb2d = targetObj.GetComponent<Rigidbody2D>();
+
+            if (rb2d != null)
             {
-                rb3.position = dest;
-                rb3.linearVelocity = Vector3.zero;
+                rb2d.position = new Vector2(dest.x, dest.y);
+                rb2d.linearVelocity = Vector2.zero;
             }
             else
             {
-                targetObj.transform.position = dest;
-            }
-        }
+                var rb3 = targetObj.GetComponent<Rigidbody>();
 
-        lastTeleported[targetObj] = Time.time;
+                if (rb3 != null)
+                {
+                    rb3.position = dest;
+                    rb3.linearVelocity = Vector3.zero;
+                }
+                else
+                {
+                    targetObj.transform.position = dest;
+                }
+            }
+
+            lastTeleported[targetObj] = Time.time;
+
+            // 검은 화면 유지 후 페이드 인
+            FadeManager.Instance.Delay(0.5f, () =>
+            {
+                FadeManager.Instance.FadeIn(0.5f, DG.Tweening.Ease.InQuad);
+            });
+        });
 
         // PlayerController가 있으면 이동 잠금 후 일정 시간 후 재허용
         var pc = targetObj.GetComponentInChildren<PlayerController>();
+
         if (pc != null)
         {
             pc.canMove = false;
@@ -87,6 +104,8 @@ public class RoomPortal : MonoBehaviour
     private System.Collections.IEnumerator ReenableMoveAfter(PlayerController pc, float delay)
     {
         yield return new WaitForSeconds(delay);
-        if (pc != null) pc.canMove = true;
+
+        if (pc != null)
+            pc.canMove = true;
     }
 }

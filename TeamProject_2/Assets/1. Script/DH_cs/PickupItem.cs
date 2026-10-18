@@ -8,15 +8,10 @@ public class PickupItem : MonoBehaviour
     public string itemName = "testitem";
     public GameObject PickupState;
 
-    void Start()
+    private void Start()
     {
         textTyping = FindAnyObjectByType<TextTyping>();
         PickupState.SetActive(false);
-    }
-
-    void Update()
-    {
-        
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -37,13 +32,14 @@ public class PickupItem : MonoBehaviour
 
     public void Collect()
     {
-        Debug.Log(itemName + " 획득");
+        Debug.Log(itemName + " 상호작용");
 
-        if (itemName == "testitem")
+        // 이 오브젝트에 연결된 기능 실행
+        ItemAction action = GetComponent<ItemAction>();
+
+        if (action != null)
         {
-            textTyping.StartDialogue(dialogue);
+            action.Execute(this);
         }
-
-        Destroy(gameObject);
     }
 }

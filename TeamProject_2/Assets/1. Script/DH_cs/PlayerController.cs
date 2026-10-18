@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
         moveInput.x = 0f;
 
 
-        if (!typing.darkUIEffect.isStory)
+        if (!typing.darkUIEffect.isStory && FadeManager.Instance.isMove)
         {
             if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
             {

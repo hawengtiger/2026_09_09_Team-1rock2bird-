@@ -11,6 +11,10 @@ public class FadeManager : MonoBehaviour
     [Header("전체 화면을 덮을 검은 패널")]
     [SerializeField] private Image blackPanel;
 
+    // 페이드 진행 여부
+    public bool isFading { get; private set; } = false;
+    public bool isMove { get; private set; } = false;
+
     private void Awake()
     {
         if (Instance == null)
@@ -29,6 +33,12 @@ public class FadeManager : MonoBehaviour
     /// </summary>
     public void FadeIn(float duration, Ease easeType, Action onComplete = null)
     {
+        if (isFading)
+            return;
+
+        isFading = true;
+        isMove = false;
+
         blackPanel.gameObject.SetActive(true);
 
         Color c = blackPanel.color;
@@ -41,7 +51,11 @@ public class FadeManager : MonoBehaviour
             .OnComplete(() =>
             {
                 blackPanel.gameObject.SetActive(false);
-                onComplete?.Invoke(); // 완료 후 실행할 함수가 있다면 실행
+
+                isFading = false;
+                isMove = true; // 이동 허용
+
+            onComplete?.Invoke();
             });
     }
 
@@ -50,6 +64,12 @@ public class FadeManager : MonoBehaviour
     /// </summary>
     public void FadeOut(float duration, Ease easeType, Action onComplete = null)
     {
+        if (isFading)
+            return;
+
+        isFading = true;
+        isMove = false; // 이동 금지
+
         blackPanel.gameObject.SetActive(true);
 
         Color c = blackPanel.color;
@@ -61,7 +81,17 @@ public class FadeManager : MonoBehaviour
             .SetEase(easeType)
             .OnComplete(() =>
             {
-                onComplete?.Invoke(); // 완료 후 실행할 함수가 있다면 실행
+                isFading = false;
+
+                onComplete?.Invoke();
             });
+    }
+
+    public void Delay(float seconds, Action onComplete = null)
+    {
+        DOVirtual.DelayedCall(seconds, () =>
+        {
+            onComplete?.Invoke();
+        });
     }
 }

@@ -232,6 +232,8 @@ public class TextTyping : MonoBehaviour
     // 모든 대사 종료
     private void FinishDialogue()
     {
+        StopCurrentCoroutine();     // 실행 중인 코루틴 강제 정지
+
         isFinished = true;
         currentState = TextState.Idle;
         typingCoroutine = null;
