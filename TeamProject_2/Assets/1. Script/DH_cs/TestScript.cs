@@ -2,25 +2,28 @@ using UnityEngine;
 
 public class TestScript : MonoBehaviour
 {
-    void Start()
-    {
-        Inventory.Instance.AddItem(2, 3); // 아이템 ID 1을 3개 추가
-    }
-
-    void Update()
-    {
-        
-    }
-    public void TestAddItem()
+    public void TestAddItem1()
     {
         Inventory.Instance.AddItem(1, 3);
     }
-    public void TestRemoveItem()
+    public void TestRemoveItem1()
     {
-        Inventory.Instance.RemoveItem(1, 2); // 아이템 ID 1을 2개 제거
+        Inventory.Instance.RemoveItem(1, 3); // 아이템 ID 1을 2개 제거
     }
-    public void TestAddItemINT(int itemID, int itemCount)
+    public void TestAddItem2()
     {
-        Inventory.Instance.AddItem(itemID, itemCount);
+        Inventory.Instance.AddItem(2, 3);
+    }
+    public void TestRemoveItem2()
+    {
+        Inventory.Instance.RemoveItem(2, 3); // 아이템 ID 2을 3개 제거
+    }
+    public void TestAddItem3()
+    {
+        Inventory.Instance.AddItem(3, 3);
+    }
+    public void TestRemoveItem3()
+    {
+        Inventory.Instance.RemoveItem(3, 3); // 아이템 ID 3을 3개 제거
     }
 }
