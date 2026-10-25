@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 /// <summary>
@@ -8,11 +9,18 @@ public class PlayBGM : MonoBehaviour
     [Header("실행할 브금")]
     public string bgmName;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Awake()
+    private void Start()
     {
-        if (bgmName == null) return;
+        if (string.IsNullOrEmpty(bgmName)) return;
 
-        SoundManager.Instance.PlayMusic(bgmName);   
+        if (SoundManager.Instance == null)
+        {
+            Debug.LogError("SoundManager가 존재하지 않습니다.");
+            return;
+        }
+
+        Debug.Log($"BGM 실행 요청: {bgmName}");
+
+        SoundManager.Instance.PlayMusic(bgmName);
     }
 }

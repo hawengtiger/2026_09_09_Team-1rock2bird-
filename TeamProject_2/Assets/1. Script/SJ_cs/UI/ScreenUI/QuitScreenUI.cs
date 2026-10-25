@@ -7,6 +7,8 @@ public class QuitScreenUI : MonoBehaviour
 {
     public void QuitGame()
     {
+        Time.timeScale = 1f;
+
         SoundManager.Instance.StopMusic();
 
         FadeManager.Instance.FadeOut(0.8f, DG.Tweening.Ease.InQuad, () =>
