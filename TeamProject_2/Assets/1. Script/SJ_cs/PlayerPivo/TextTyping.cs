@@ -45,14 +45,14 @@ public class TextTyping : MonoBehaviour
         if (isFinished)
             return;
 
-        // 좌클릭 : 대사 진행
-        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+        // 좌클릭 또는 Z키 : 대사 진행 
+        if ((Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)  || Keyboard.current.zKey.wasPressedThisFrame)
         {
             NextDialogue();
         }
 
-        // Z키 : 현재 출력 또는 삭제 즉시 완료
-        if (Keyboard.current != null && Keyboard.current.zKey.wasPressedThisFrame)
+        // X키 : 현재 출력 또는 삭제 즉시 완료
+        if (Keyboard.current != null && Keyboard.current.xKey.wasPressedThisFrame)
         {
             FinishDialogue();
         }

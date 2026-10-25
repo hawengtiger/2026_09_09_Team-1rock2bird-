@@ -14,5 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogueDataSO
   dialogues:
   - '!'
-  - "\uAC15\uC544\uC9C0..\uC18C\uB9AC?"
   - "(\uB098\uAC00\uBCF4\uC790)"

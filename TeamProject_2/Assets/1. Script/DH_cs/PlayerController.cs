@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
     // 현재 범위 내에서 사용 가능한 가장 가까운 PickupItem(없으면 null)
     private PickupItem nearestPickup;
     private Interction_obj nearestInterction;
+    private PetPuzzleManager pet;
 
     private TextTyping typing;
 
@@ -28,6 +29,7 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         typing = FindAnyObjectByType<TextTyping>();
+        pet = FindAnyObjectByType<PetPuzzleManager>();
     }
 
     private void Update()
@@ -37,7 +39,7 @@ public class PlayerController : MonoBehaviour
         moveInput.x = 0f;
 
 
-        if (!typing.darkUIEffect.isStory && FadeManager.Instance.isMove)
+        if ((pet.currentState == PuzzleState.WaitToEnter) && !typing.darkUIEffect.isStory && FadeManager.Instance.isMove)
         {
             if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
             {
