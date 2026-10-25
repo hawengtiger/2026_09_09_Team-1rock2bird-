@@ -141,8 +141,8 @@ public class PlayerController : MonoBehaviour
         foreach (var c in cols)
         {
             if (c == null) continue;
-            // 태그가 "Object"인 것만 검사
-            if (!c.CompareTag("Object")) continue;
+/*            // 태그가 "Object"인 것만 검사
+            if (!c.CompareTag("Object")) continue;*/
 
             // Interction_obj은 콜라이더에 붙어있을 수도, 부모 오브젝트에 있을 수도 있으므로 GetComponentInParent 사용
             var interaction = c.GetComponentInParent<Interction_obj>();

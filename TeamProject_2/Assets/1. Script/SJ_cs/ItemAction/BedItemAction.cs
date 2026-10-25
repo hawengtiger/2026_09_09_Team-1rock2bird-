@@ -18,11 +18,20 @@ public class BedItemAction : ItemAction
     [Header("전역 빛")]
     public Light2D light;
 
+    [Header("잠을 잔 후 다이얼 로그")]
+    public GameObject[] triggerWall;
+
+    [Header("잠을 잔 후 다이얼 로그")]
+    public GameObject yeonglong2;
+
     private bool isSleep;
 
     private void Start()
     {
         textTyping = FindAnyObjectByType<TextTyping>();
+        triggerWall[0].SetActive(false);
+        triggerWall[1].SetActive(false);
+        yeonglong2.SetActive(false);
     }
 
     public override void Execute(PickupItem item)
@@ -50,6 +59,9 @@ public class BedItemAction : ItemAction
                 {
                     isSleep = true;
                     FadeManager.Instance.FadeIn(0.5f, DG.Tweening.Ease.InQuad);
+                    triggerWall[0].SetActive(true);
+                    yeonglong2.SetActive(true);
+                    triggerWall[1].SetActive(true);
                 });
             });
         }

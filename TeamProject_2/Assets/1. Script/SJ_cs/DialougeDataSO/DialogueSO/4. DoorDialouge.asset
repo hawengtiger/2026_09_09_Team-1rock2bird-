@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 69a9ee36389921a4dbfc4f3f907dee2d, type: 3}
-  m_Name: 2. Medicen
+  m_Name: 4. DoorDialouge
   m_EditorClassIdentifier: Assembly-CSharp::DialogueDataSO
   dialogues:
-  - .....
-  - "\uCC3E\uC558\uB2E4."
-  - "(E\uB97C \uB20C\uB7EC \uC57D \uD68D\uB4DD.)"
+  - '!'
+  - "\uAC15\uC544\uC9C0..\uC18C\uB9AC?"
+  - "(\uB098\uAC00\uBCF4\uC790)"
