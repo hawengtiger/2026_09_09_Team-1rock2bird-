@@ -11,7 +11,7 @@ public class DogTrigger : MonoBehaviour
 
         if (dogPosMove != null)
         {
-            dogPosMove.SpawnTarget(3, 0);
+            dogPosMove.SpawnTarget(5, 0);
         }
 
         if (dogFacePuzzleAction != null)

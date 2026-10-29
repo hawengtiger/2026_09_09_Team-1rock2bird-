@@ -3,6 +3,9 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("애니메이션")]
+    public Animator animator;
+
     [Header("Movement")]
     public float moveSpeed = 5f;
     public bool canMove = true;
@@ -14,6 +17,10 @@ public class PlayerController : MonoBehaviour
     public string itemTag = "Item";
     [Tooltip("Gizmo로 반경 표시")]
     public bool showPickupGizmo = true;
+
+    [Header("달리기")]
+    public float sprintMultiplier = 2f;
+    private bool isRunning = false;
 
     private Rigidbody2D rb;
     private Vector2 moveInput;
@@ -38,6 +45,9 @@ public class PlayerController : MonoBehaviour
         // 이동 입력
         moveInput.x = 0f;
 
+        // 왼쪽 Shift를 누르고 있는지 확인
+        isRunning = Keyboard.current != null &&
+                    Keyboard.current.leftShiftKey.isPressed;
 
         if ((pet.currentState == PuzzleState.WaitToEnter) && !typing.darkUIEffect.isStory && FadeManager.Instance.isMove)
         {
@@ -84,17 +94,40 @@ public class PlayerController : MonoBehaviour
                 nearestInterction.Interact();
             }
         }
+
+        PlayerAnimation();
     }
 
     private void FixedUpdate() // 외부에서 이동 입력을 적용할 때 사용, canMove이 false면 입력을 무시합니다.
     {
-        // Rigidbody2D를 이용한 이동
+        // Shift를 누르면 이동 속도 2배
+        float currentSpeed = isRunning
+            ? moveSpeed * sprintMultiplier
+            : moveSpeed;
+
         rb.linearVelocity = new Vector2(
-            moveInput.x * moveSpeed,
+            moveInput.x * currentSpeed,
             rb.linearVelocity.y
         );
+
+        PlayerAnimation();
     }
-    
+
+    private void PlayerAnimation()
+    {
+        if (animator == null)
+            return;
+
+        float speed = 0f;
+
+        if (Mathf.Abs(rb.linearVelocity.x) > 0.01f)
+        {
+            speed = isRunning ? 1f : 0.5f;
+        }
+
+        animator.SetFloat("Speed", speed);
+    }
+
     public void ApplyMove(float x) // 반경 내의 itemTag태그, PickupItem 컴포넌트, canPickup == true인 가장 가까운 아이템을 반환
     {
         if (!canMove)
