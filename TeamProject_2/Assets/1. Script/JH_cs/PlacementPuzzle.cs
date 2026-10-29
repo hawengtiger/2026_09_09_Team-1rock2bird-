@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 using TMPro;
 
 // 2D 공간 맞추기 퍼즐
@@ -29,6 +30,14 @@ public class PlacementPuzzle : MonoBehaviour
     [Header("안내 문구 (선택)")]
     public TMP_Text promptText;
 
+    [Header("화면 메시지 (틀림 / 성공)")]
+    public TMP_Text messageText;            // 틀렸을 때, 성공했을 때 뜨는 글 (PuzzleUI 밖에 두기)
+    public float messageDuration = 2f;      // 일반 메시지 표시 시간
+    public string solvedMessage = "퍼즐 성공!";
+    public float solvedMessageDuration = 3f;
+
+    private float messageTimer = 0f;
+
     private bool[] hasItem;
     private int selectedIndex = 0;
     private PlacementSpot hoveredSpot;
@@ -54,14 +63,26 @@ public class PlacementPuzzle : MonoBehaviour
 
         UpdateSlotUI();
         SetPrompt("");
+        if (messageText != null) messageText.text = "";
     }
 
     void Update()
     {
-        HandleItemSelect();
+        // 사진을 크게 보고 있는 동안에는 퍼즐 조작을 막음
+        if (!PhotoViewer.IsOpen)
+        {
+            HandleItemSelect();
 
-        if (currentSpot == null) HandleDefaultView();
-        else HandleZoomView();
+            if (currentSpot == null) HandleDefaultView();
+            else HandleZoomView();
+        }
+
+        // 화면 메시지 시간 지나면 지우기
+        if (messageTimer > 0f)
+        {
+            messageTimer -= Time.deltaTime;
+            if (messageTimer <= 0f && messageText != null) messageText.text = "";
+        }
 
         // 카메라 부드럽게 이동/확대
         cam.transform.position = Vector3.Lerp(cam.transform.position, targetPos, Time.deltaTime * moveSpeed);
@@ -87,7 +108,9 @@ public class PlacementPuzzle : MonoBehaviour
     // 기본뷰: 마우스 올리면 하이라이트, 클릭하면 확대(확인하기)
     private void HandleDefaultView()
     {
-        PlacementSpot spot = GetSpotUnderMouse();
+        // 마우스가 UI(사진 등) 위에 있으면 맵 클릭 무시
+        bool overUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+        PlacementSpot spot = overUI ? null : GetSpotUnderMouse();
 
         if (spot != hoveredSpot)
         {
@@ -157,13 +180,13 @@ public class PlacementPuzzle : MonoBehaviour
     {
         if (!hasItem[selectedIndex])
         {
-            SetPromptTemp("이미 사용한 아이템입니다.");
+            ShowMessage("이미 사용한 아이템입니다.", messageDuration);
             return;
         }
 
         if (selectedIndex != currentSpot.requiredItemIndex)
         {
-            SetPromptTemp($"{itemNames[selectedIndex]}은(는) 여기에 맞지 않는 것 같다.");
+            ShowMessage($"{itemNames[selectedIndex]}은(는) 여기에 맞지 않는 것 같다.", messageDuration);
             return;
         }
 
@@ -189,7 +212,7 @@ public class PlacementPuzzle : MonoBehaviour
         }
 
         isSolved = true;
-        Debug.Log("공간 맞추기 퍼즐 완성!");
+        ShowMessage(solvedMessage, solvedMessageDuration);
     }
 
     private void UpdateSlotUI()
@@ -211,10 +234,13 @@ public class PlacementPuzzle : MonoBehaviour
         if (promptText != null) promptText.text = text;
     }
 
-    private void SetPromptTemp(string text)
+    // 화면에 메시지를 잠깐 띄움 (시간 지나면 자동으로 사라짐)
+    private void ShowMessage(string text, float duration)
     {
-        Debug.Log(text);
-        if (promptText != null) promptText.text = text;
+        if (messageText == null) return;
+
+        messageText.text = text;
+        messageTimer = duration;
     }
 
     public bool IsSolved => isSolved;
