@@ -3,14 +3,14 @@ guid: 0e036cccdd2d7694eb1fb67a943ecefa
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1304732580669084495
-    second: 1792935262098_0
+      213: 8655932854063555052
+    second: "\uB108\uC640\uB098_0"
   - first:
-      213: 7339535681760022565
-    second: 1792935262098_1
+      213: -3647689877643752409
+    second: "\uB108\uC640\uB098_1"
   - first:
-      213: -7162761961704788375
-    second: 1792935262098_2
+      213: 4116558399521022044
+    second: "\uB108\uC640\uB098_2"
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -106,7 +106,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: 1792935262098_0
+      name: "\uB108\uC640\uB098_0"
       rect:
         serializedVersion: 2
         x: 0
@@ -121,14 +121,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1bc275271a8a4ede0800000000000000
-      internalID: -1304732580669084495
+      spriteID: ce16716d11d002870800000000000000
+      internalID: 8655932854063555052
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 1792935262098_1
+      name: "\uB108\uC640\uB098_1"
       rect:
         serializedVersion: 2
         x: 1672
@@ -143,14 +143,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5205c97e0d44bd560800000000000000
-      internalID: 7339535681760022565
+      spriteID: 72c8140f16dc06dc0800000000000000
+      internalID: -3647689877643752409
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 1792935262098_2
+      name: "\uB108\uC640\uB098_2"
       rect:
         serializedVersion: 2
         x: 1677
@@ -165,8 +165,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 96ee7ed12f1c89c90800000000000000
-      internalID: -7162761961704788375
+      spriteID: c50e99ccd04f02930800000000000000
+      internalID: 4116558399521022044
       vertices: []
       indices: 
       edges: []
@@ -185,9 +185,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      1792935262098_0: -1304732580669084495
-      1792935262098_1: 7339535681760022565
-      1792935262098_2: -7162761961704788375
+      "\uB108\uC640\uB098_0": 8655932854063555052
+      "\uB108\uC640\uB098_1": -3647689877643752409
+      "\uB108\uC640\uB098_2": 4116558399521022044
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

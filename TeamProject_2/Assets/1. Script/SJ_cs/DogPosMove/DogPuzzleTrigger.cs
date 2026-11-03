@@ -6,16 +6,7 @@ public class DogPuzzleTrigger : MonoBehaviour
     [Header("퍼즐")]
     public PetPuzzleManager petPuzzleManager;
 
-    [Header("성공 시 활성화할 오브젝트")]
-    public GameObject targetObject;
-
     private bool isActivated = false;
-
-    private void Start()
-    {
-        if (targetObject != null)
-            targetObject.SetActive(false);
-    }
 
     private void Update()
     {
@@ -30,8 +21,5 @@ public class DogPuzzleTrigger : MonoBehaviour
             return;
 
         isActivated = true;
-
-        if (targetObject != null)
-            targetObject.SetActive(true);
     }
 }
