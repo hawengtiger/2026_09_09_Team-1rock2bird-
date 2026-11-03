@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8275601312127729255}
+  - component: {fileID: 7990682744854258645}
   m_Layer: 0
   m_Name: PuzzleManager
   m_TagString: Untagged
@@ -31,3 +32,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7990682744854258645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7969801635712568042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9adbed8e914738546b9083972c316fe9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PerspectivePuzzle
+  puzzleUI: {fileID: 0}
+  puzzleContainer: {fileID: 0}
+  cam: {fileID: 0}
+  resetContainerRotation: 1
+  pieces: []
+  messageText: {fileID: 0}
+  solvedMessage: "\uD37C\uC990 \uC644\uC131! F\uB97C \uB20C\uB7EC\uC11C \uB2EB\uACE0
+    \uD50C\uB808\uC774\uC5B4\uB85C \uB3CC\uC544\uAC00\uC138\uC694."
+  wrongMessage: "\uBAA8\uC591\uC774 \uB9DE\uC9C0 \uC54A\uB294 \uAC83 \uAC19\uB2E4."
+  wrongMessageDuration: 1.5
