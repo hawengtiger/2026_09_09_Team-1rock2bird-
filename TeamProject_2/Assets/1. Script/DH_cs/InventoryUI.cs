@@ -5,12 +5,11 @@ using UnityEngine.InputSystem;
 
 public class InventoryUI : MonoBehaviour
 {
-    [Header("인벤토리 슬롯 3개")]
-    [SerializeField] private InventorySlotUI[] slots = new InventorySlotUI[3];
+    [Header("인벤토리 슬롯 2개")]
+    [SerializeField] private InventorySlotUI[] slots = new InventorySlotUI[2];
 
     // 각 슬롯에 고정 배정된 아이템
-    private Inventory.ItemData[] slotItems =
-        new Inventory.ItemData[3];
+    private Inventory.ItemData[] slotItems = new Inventory.ItemData[2];
 
     // 현재 선택된 슬롯
     private int selectedSlot = -1;
