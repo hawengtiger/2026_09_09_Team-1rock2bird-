@@ -18,13 +18,13 @@ EditorBuildSettings:
     path: Assets/0. Scenes/MapTestScene_nana.unity
     guid: 0ce3484262617ad408aea4631f2f0d81
   - enabled: 1
-    path: Assets/0. Scenes/Puzzle2Scene.unity
+    path: Assets/0. Scenes/PuzzleSceneheartmadince.unity
     guid: 4007fd1e624fb6c439ab5a46dff3d827
   - enabled: 1
     path: Assets/0. Scenes/PuzzleScene.unity
     guid: 36b5bb78a02ca974fb8e115a9597c108
   - enabled: 1
-    path: Assets/0. Scenes/puzzleScene3.unity
+    path: Assets/0. Scenes/CorrectPuzzleScene.unity
     guid: a0665499148addc429f7c0fdd12bfb21
   - enabled: 1
     path: Assets/0. Scenes/SelcetScene.unity
