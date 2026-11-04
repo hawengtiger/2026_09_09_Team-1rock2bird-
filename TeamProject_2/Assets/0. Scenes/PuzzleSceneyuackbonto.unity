@@ -616,17 +616,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &910558789 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1658399474696729780, guid: 06d51de4a3ebe394ba36291904a8c3cc, type: 3}
-  m_PrefabInstance: {fileID: 5185020175972247807}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!1 &961278961
 GameObject:
   m_ObjectHideFlags: 0
@@ -1248,6 +1237,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93e968bebd9bb4e4f973c27832a43011, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PuzzlePiece
+  targetSlot: {fileID: 1060771908}
+  snapDistance: 50
+  returnIfWrong: 1
+  isPlaced: 0
 --- !u!61 &1861827736
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1459,6 +1452,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93e968bebd9bb4e4f973c27832a43011, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PuzzlePiece
+  targetSlot: {fileID: 695173956}
+  snapDistance: 50
+  returnIfWrong: 1
+  isPlaced: 0
 --- !u!61 &1915640792
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1610,6 +1607,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93e968bebd9bb4e4f973c27832a43011, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PuzzlePiece
+  targetSlot: {fileID: 1578687442}
+  snapDistance: 50
+  returnIfWrong: 1
+  isPlaced: 0
 --- !u!61 &1921310452
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1793,6 +1794,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93e968bebd9bb4e4f973c27832a43011, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PuzzlePiece
+  targetSlot: {fileID: 596069740}
+  snapDistance: 50
+  returnIfWrong: 1
+  isPlaced: 0
 --- !u!61 &1990703046
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2003,6 +2008,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93e968bebd9bb4e4f973c27832a43011, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PuzzlePiece
+  targetSlot: {fileID: 633831630}
+  snapDistance: 50
+  returnIfWrong: 1
+  isPlaced: 0
 --- !u!61 &1993491736
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2138,7 +2147,7 @@ SpriteRenderer:
   m_Size: {x: 10.63, y: 8.91}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
 --- !u!1001 &5185020175972247807
 PrefabInstance:
@@ -2276,6 +2285,17 @@ PrefabInstance:
       addedObject: {fileID: 1851060214}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 06d51de4a3ebe394ba36291904a8c3cc, type: 3}
+--- !u!114 &5185020175972247808 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4842063876708372893, guid: 06d51de4a3ebe394ba36291904a8c3cc, type: 3}
+  m_PrefabInstance: {fileID: 5185020175972247807}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!224 &5185020175972247809 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7145356523302478764, guid: 06d51de4a3ebe394ba36291904a8c3cc, type: 3}
@@ -2292,7 +2312,7 @@ PrefabInstance:
     - target: {fileID: 2117904259564710191, guid: d94190b701cf8b645901421bb3ad4d49, type: 3}
       propertyPath: dragBar
       value: 
-      objectReference: {fileID: 910558789}
+      objectReference: {fileID: 0}
     - target: {fileID: 2117904259564710191, guid: d94190b701cf8b645901421bb3ad4d49, type: 3}
       propertyPath: puzzleUI
       value: 
@@ -2316,7 +2336,7 @@ PrefabInstance:
     - target: {fileID: 7990682744854258645, guid: d94190b701cf8b645901421bb3ad4d49, type: 3}
       propertyPath: messageText
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 5185020175972247808}
     - target: {fileID: 7990682744854258645, guid: d94190b701cf8b645901421bb3ad4d49, type: 3}
       propertyPath: puzzleContainer
       value: 
