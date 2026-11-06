@@ -103,10 +103,10 @@ TextureImporter:
       name: Dog_Walk_7_0
       rect:
         serializedVersion: 2
-        x: 13
-        y: 17
-        width: 241
-        height: 187
+        x: 6
+        y: 10
+        width: 255
+        height: 201
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
