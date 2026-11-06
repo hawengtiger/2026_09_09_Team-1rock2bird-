@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 0fc17dac15ada634aae30fd8471adf7a
+guid: a7adbe54d3bff1d488d7ae493acece48
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1902110775956844473
-    second: Dog_Idle_6_0
+      213: -5200619672528741161
+    second: Dog_Idle_16_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Dog_Idle_6_0
+      name: Dog_Idle_16_0
       rect:
         serializedVersion: 2
-        x: 13
-        y: 15
-        width: 241
-        height: 189
+        x: 6
+        y: 8
+        width: 255
+        height: 203
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9bfa9544ca7a56a10800000000000000
-      internalID: 1902110775956844473
+      spriteID: 7dc140f36ffa3d7b0800000000000000
+      internalID: -5200619672528741161
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Dog_Idle_6_0: 1902110775956844473
+      Dog_Idle_16_0: -5200619672528741161
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
