@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class TriggerDialogue : MonoBehaviour
 {
-    public TextTyping textTyping;
-    public DialogueDataSO dialogue;
+    public TextTyping textTyping;             // 스크립트
+    public DialogueDataSO dialogue;     // 다이얼로그 SO 데이터 형식
 
     [Header("플레이어 이동 거리")]
     public float offset = 2f;

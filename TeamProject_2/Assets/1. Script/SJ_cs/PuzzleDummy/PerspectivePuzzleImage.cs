@@ -49,8 +49,7 @@ public class PerspectivePuzzleImage : ItemAction
         // 퍼즐 조각이 속한 Canvas의 GraphicRaycaster 검색
         if (graphicRaycaster == null && puzzleContainer != null)
         {
-            graphicRaycaster =
-                puzzleContainer.GetComponentInParent<GraphicRaycaster>();
+            graphicRaycaster = puzzleContainer.GetComponentInParent<GraphicRaycaster>();
         }
 
         // 퍼즐 조각 자동 검색
@@ -213,8 +212,7 @@ public class PerspectivePuzzleImage : ItemAction
         }
 
         // 마우스를 따라 조각 이동
-        RectTransform dragRect =
-            dragging.GetComponent<RectTransform>();
+        RectTransform dragRect = dragging.GetComponent<RectTransform>();
 
         // 이전 마우스 위치와 현재 마우스 위치의 차이
         Vector2 mouseDelta = mouse - previousMousePosition;

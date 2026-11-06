@@ -14,6 +14,9 @@ public class InventoryUI : MonoBehaviour
     // 현재 선택된 슬롯
     private int selectedSlot = -1;
 
+    // 이번 프레임에 아이템을 사용했는지
+    public static int LastItemUseFrame = -1;
+
     private void Start()
     {
         RefreshInventory();
@@ -80,15 +83,27 @@ public class InventoryUI : MonoBehaviour
 
         int itemID = (int)item.itemID;
 
-        // 먼저 아이템 소모
+        // 약은 강아지 근처에서만 사용
+        if (itemID == 1)
+        {
+            if (DogMedicineAction.Current == null ||
+                !DogMedicineAction.Current.CanUseMedicine())
+            {
+                return;
+            }
+        }
+
+        // 아이템 사용 성공 시
         if (Inventory.Instance.RemoveItem(itemID, 1))
         {
+            // 이번 프레임에는 일반 상호작용을 막기
+            LastItemUseFrame = Time.frameCount;
+
             // 아이템별 사용 함수 실행
             item.onUse?.Invoke();
 
             Debug.Log($"아이템 사용 : {item.itemName}");
 
-            // 개수가 0이면 해당 슬롯만 비우기
             if (item.itemCount <= 0)
             {
                 slotItems[selectedSlot] = null;

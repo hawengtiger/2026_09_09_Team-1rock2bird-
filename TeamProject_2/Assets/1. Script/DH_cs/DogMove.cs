@@ -1,6 +1,6 @@
+
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
 
 public class DogMove : MonoBehaviour
 {
@@ -11,11 +11,22 @@ public class DogMove : MonoBehaviour
     public Animator animator;
     public SpriteRenderer spriteRenderer;
 
+    [Header("자식 오브젝트 방향 전환")]
+    public Transform pivo;
+
+    private float pivoScaleX;
+
     void Start()
     {
         isMoving = false;
+
         if (spriteRenderer == null)
             spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (pivo != null)
+            pivoScaleX = Mathf.Abs(pivo.localScale.x);
+
+        DisableCanvas();
     }
 
     void Update()
@@ -23,7 +34,10 @@ public class DogMove : MonoBehaviour
         if (reachPointsList == null || reachPointsList.Count == 0)
         {
             isMoving = false;
-            if (animator != null) animator.SetBool("move", false);
+
+            if (animator != null)
+                animator.SetBool("move", false);
+
             return;
         }
 
@@ -45,13 +59,26 @@ public class DogMove : MonoBehaviour
         }
 
         isMoving = true;
-        if (animator != null) animator.SetBool("move", true);
+
+        if (animator != null)
+            animator.SetBool("move", true);
 
         // 좌우 방향에 따라 스프라이트 플립
         float dirX = targetPoint.position.x - transform.position.x;
+
         if (spriteRenderer != null && Mathf.Abs(dirX) > 0.01f)
         {
             spriteRenderer.flipX = dirX < 0f;
+        }
+
+        // SpriteRenderer의 flipX 상태에 따라 Pivo 반전
+        if (pivo != null && spriteRenderer != null)
+        {
+            Vector3 scale = pivo.localScale;
+
+            scale.x = spriteRenderer.flipX ? -pivoScaleX : pivoScaleX;
+
+            pivo.localScale = scale;
         }
 
         transform.position = Vector3.MoveTowards(transform.position, targetPoint.position, moveSpeed * Time.deltaTime);
@@ -65,5 +92,15 @@ public class DogMove : MonoBehaviour
         }
     }
 
+    private void DisableCanvas()
+    {
+        if (pivo == null) return;
 
+        Canvas canvas = pivo.GetComponentInChildren<Canvas>(true);
+
+        if (canvas != null)
+        {
+            canvas.gameObject.SetActive(false);
+        }
+    }
 }
