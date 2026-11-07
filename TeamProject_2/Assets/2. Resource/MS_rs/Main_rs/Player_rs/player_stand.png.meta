@@ -103,10 +103,10 @@ TextureImporter:
       name: player_stand_0
       rect:
         serializedVersion: 2
-        x: 63
-        y: 6
-        width: 193
-        height: 486
+        x: 44
+        y: 0
+        width: 207
+        height: 499
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
