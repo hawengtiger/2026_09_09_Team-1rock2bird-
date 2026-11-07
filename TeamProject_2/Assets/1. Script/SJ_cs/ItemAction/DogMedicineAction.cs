@@ -7,6 +7,9 @@ public class DogMedicineAction : MonoBehaviour
 {
     public static DogMedicineAction Current;
 
+    [Header("영롱이 상호작용")]
+    public PickupItem pickupItem;
+
     [Header("영롱이 이동")]
     public GameObject triggers;
 
@@ -164,7 +167,13 @@ public class DogMedicineAction : MonoBehaviour
 
         isWaitingForCarry = true;
 
-        Debug.Log("영롱이가 소파에 도착했습니다.");
+        // 기존 PickupItem의 UI 활성화
+        if (pickupItem != null && pickupItem.PickupState != null)
+        {
+            pickupItem.PickupState.SetActive(true);
+        }
+
+        Debug.Log("영롱이가 소파에 도착했습니다. F키를 눌러주세요.");
     }
 
     // 영롱이를 업는 연출
@@ -173,36 +182,37 @@ public class DogMedicineAction : MonoBehaviour
         if (!isWaitingForCarry || isCarrying)
             return;
 
-        if (playerSpriteRenderer == null || carryingSprite == null)
+        if (playerAnimator == null)
             return;
 
         isWaitingForCarry = false;
         isCarrying = true;
 
-        originalSprite = playerSpriteRenderer.sprite;
+        // 기존 PickupItem의 UI 비활성화
+        if (pickupItem != null && pickupItem.PickupState != null)
+        {
+            pickupItem.PickupState.SetActive(false);
+        }
 
+        // 플레이어 이동 비활성화
         if (playerMovement != null)
         {
             originalMovementEnabled = playerMovement.enabled;
             playerMovement.enabled = false;
         }
 
-        if (playerAnimator != null)
-        {
-            originalAnimatorEnabled = playerAnimator.enabled;
-            playerAnimator.enabled = false;
-        }
+        // 영롱이를 업은 애니메이션으로 전환
+        playerAnimator.SetBool("isHug", true);
 
-        // 영롱이 모습만 숨기기
+        // 영롱이 모습 숨기기
         if (dogSpriteRenderer != null)
         {
             dogSpriteRenderer.enabled = false;
         }
 
-        playerSpriteRenderer.sprite = carryingSprite;
-
         Debug.Log("영롱이를 업었습니다. 1번 선택 후 F키로 약을 사용하세요.");
     }
+
 
     // 인벤토리 onUse에서 호출
     public void UseMedicine()
@@ -217,12 +227,13 @@ public class DogMedicineAction : MonoBehaviour
         StartCoroutine(FinishMedicineSequence());
     }
 
+
     private IEnumerator FinishMedicineSequence()
     {
-        // 약을 먹인 후 2초 대기
+        // 약 사용 후 2초 대기
         yield return new WaitForSeconds(medicineDuration);
 
-        // 플레이어 이동만 다시 허용
+        // 플레이어 이동 허용
         if (playerMovement != null)
         {
             playerMovement.enabled = originalMovementEnabled;
@@ -230,11 +241,17 @@ public class DogMedicineAction : MonoBehaviour
 
         Debug.Log("약 먹이기 완료! 영롱이를 업은 상태로 이동 가능");
 
-        textTyping.StartDialogue(walkdialogue);
+        if (textTyping != null && walkdialogue != null)
+        {
+            textTyping.StartDialogue(walkdialogue);
+        }
 
-        triggers.SetActive(true);
-
+        if (triggers != null)
+        {
+            triggers.SetActive(true);
+        }
     }
+
 
     private void OnDestroy()
     {
