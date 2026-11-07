@@ -32,6 +32,15 @@ public class PetPuzzleData
     [Header("실패 문구")]
     [TextArea(2, 4)]
     public string failText = "실패! 영룡이가 경멸하는 표정을 짓습니다.";
+
+    [Header("강아지 표정")]
+    public Sprite idleFace;
+    public Sprite wantFace;
+    public Sprite successFace;
+    public Sprite failFace;
+
+    [Header("선택지별 반응 표정")]
+    public Sprite[] optionReactionFaces;
 }
 
 public class PetPuzzleManager : MonoBehaviour
@@ -54,15 +63,6 @@ public class PetPuzzleManager : MonoBehaviour
     [Header("강아지 표정 - 표시 대상")]
     public Image petFaceImage;
 
-    [Header("강아지 표정 - 아트")]
-    public Sprite idleFace;
-    public Sprite wantFace;
-    public Sprite successFace;
-    public Sprite failFace;
-
-    [Tooltip("선택지별 반응 표정")]
-    public Sprite[] optionReactionFaces;
-
     [Header("사운드")]
     public AudioSource audioSource;
     public AudioClip kkiingSound;
@@ -73,17 +73,29 @@ public class PetPuzzleManager : MonoBehaviour
 
     public int CurrentSelectedIndex => currentSelectedIndex;
 
-    // 기존 DogFacePuzzleAction과 호환
-    public int correctOptionIndex
+    // 현재 퍼즐 데이터
+    private PetPuzzleData CurrentPuzzle
     {
         get
         {
             if (puzzles == null ||
                 currentPuzzleIndex < 0 ||
                 currentPuzzleIndex >= puzzles.Count)
+                return null;
+
+            return puzzles[currentPuzzleIndex];
+        }
+    }
+
+    // 기존 DogFacePuzzleAction과 호환
+    public int correctOptionIndex
+    {
+        get
+        {
+            if (CurrentPuzzle == null)
                 return -1;
 
-            return puzzles[currentPuzzleIndex].correctOptionIndex;
+            return CurrentPuzzle.correctOptionIndex;
         }
     }
 
@@ -94,7 +106,8 @@ public class PetPuzzleManager : MonoBehaviour
 
     private void Update()
     {
-        if (Keyboard.current == null) return;
+        if (Keyboard.current == null)
+            return;
 
         if (currentState == PuzzleState.PuzzleActive)
         {
@@ -115,14 +128,13 @@ public class PetPuzzleManager : MonoBehaviour
         if (petRoot != null)
             petRoot.SetActive(false);
 
-        SetPetFace(idleFace);
+        if (CurrentPuzzle != null)
+            SetPetFace(CurrentPuzzle.idleFace);
     }
 
     private void EnterPuzzle()
     {
-        if (puzzles == null ||
-            currentPuzzleIndex < 0 ||
-            currentPuzzleIndex >= puzzles.Count)
+        if (CurrentPuzzle == null)
         {
             Debug.LogWarning("퍼즐 데이터가 없습니다.");
             return;
@@ -141,7 +153,7 @@ public class PetPuzzleManager : MonoBehaviour
         UpdateOptionHighlight();
         UpdatePuzzleUI();
 
-        SetPetFace(wantFace);
+        SetPetFace(CurrentPuzzle.wantFace);
 
         if (audioSource != null && kkiingSound != null)
             audioSource.PlayOneShot(kkiingSound);
@@ -149,7 +161,10 @@ public class PetPuzzleManager : MonoBehaviour
 
     private void UpdatePuzzleUI()
     {
-        PetPuzzleData data = puzzles[currentPuzzleIndex];
+        PetPuzzleData data = CurrentPuzzle;
+
+        if (data == null)
+            return;
 
         if (statusText != null)
             statusText.text = data.questionText;
@@ -175,21 +190,27 @@ public class PetPuzzleManager : MonoBehaviour
     {
         if (Keyboard.current.digit1Key.wasPressedThisFrame ||
             Keyboard.current.numpad1Key.wasPressedThisFrame)
+        {
             SelectOption(0);
-
+        }
         else if (Keyboard.current.digit2Key.wasPressedThisFrame ||
                  Keyboard.current.numpad2Key.wasPressedThisFrame)
+        {
             SelectOption(1);
-
+        }
         else if (Keyboard.current.digit3Key.wasPressedThisFrame ||
                  Keyboard.current.numpad3Key.wasPressedThisFrame)
+        {
             SelectOption(2);
+        }
     }
 
     public void OnOptionButtonClicked(int index)
     {
         if (currentState == PuzzleState.PuzzleActive)
+        {
             SelectOption(index);
+        }
     }
 
     private void SelectOption(int index)
@@ -197,10 +218,13 @@ public class PetPuzzleManager : MonoBehaviour
         if (currentState != PuzzleState.PuzzleActive)
             return;
 
+        if (CurrentPuzzle == null)
+            return;
+
         if (index < 0 || index >= optionButtonTexts.Length)
             return;
 
-        PetPuzzleData data = puzzles[currentPuzzleIndex];
+        PetPuzzleData data = CurrentPuzzle;
 
         if (data.optionTexts == null ||
             index >= data.optionTexts.Count)
@@ -214,7 +238,8 @@ public class PetPuzzleManager : MonoBehaviour
 
     private void UpdateOptionHighlight()
     {
-        if (optionHighlights == null) return;
+        if (optionHighlights == null)
+            return;
 
         for (int i = 0 ; i < optionHighlights.Length ; i++)
         {
@@ -230,24 +255,33 @@ public class PetPuzzleManager : MonoBehaviour
 
     private void EvaluateChoice()
     {
+        if (CurrentPuzzle == null)
+            return;
+
         currentState = PuzzleState.ResultWait;
 
-        PetPuzzleData data = puzzles[currentPuzzleIndex];
+        PetPuzzleData data = CurrentPuzzle;
 
         bool isCorrect =
             currentSelectedIndex == data.correctOptionIndex;
 
         Sprite reaction = null;
 
-        if (optionReactionFaces != null &&
+        // 현재 퍼즐의 선택지별 표정
+        if (data.optionReactionFaces != null &&
             currentSelectedIndex >= 0 &&
-            currentSelectedIndex < optionReactionFaces.Length)
+            currentSelectedIndex < data.optionReactionFaces.Length)
         {
-            reaction = optionReactionFaces[currentSelectedIndex];
+            reaction = data.optionReactionFaces[currentSelectedIndex];
         }
 
+        // 선택지 표정이 없다면 성공/실패 표정 사용
         if (reaction == null)
-            reaction = isCorrect ? successFace : failFace;
+        {
+            reaction = isCorrect
+                ? data.successFace
+                : data.failFace;
+        }
 
         SetPetFace(reaction);
 
@@ -261,7 +295,8 @@ public class PetPuzzleManager : MonoBehaviour
 
     private void SetPetFace(Sprite face)
     {
-        if (face == null) return;
+        if (face == null)
+            return;
 
         if (petFaceImage != null)
             petFaceImage.sprite = face;
@@ -290,6 +325,36 @@ public class PetPuzzleManager : MonoBehaviour
         if (currentPuzzleIndex + 1 < puzzles.Count)
         {
             currentPuzzleIndex++;
+
+            Debug.Log(
+                $"현재 퍼즐 번호: {currentPuzzleIndex}"
+            );
         }
+    }
+
+    // 외부에서 특정 퍼즐 선택
+    public void SetPuzzle(int index)
+    {
+        if (index < 0 || index >= puzzles.Count)
+        {
+            Debug.LogWarning(
+                $"존재하지 않는 퍼즐 번호: {index}"
+            );
+            return;
+        }
+
+        if (currentState != PuzzleState.WaitToEnter)
+        {
+            Debug.LogWarning(
+                "퍼즐 진행 중에는 변경할 수 없습니다."
+            );
+            return;
+        }
+
+        currentPuzzleIndex = index;
+
+        SetPetFace(CurrentPuzzle.idleFace);
+
+        Debug.Log($"{index + 1}번 퍼즐로 변경!");
     }
 }
