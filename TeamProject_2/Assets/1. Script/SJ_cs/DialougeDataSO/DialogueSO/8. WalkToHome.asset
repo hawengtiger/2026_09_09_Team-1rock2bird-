@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 69a9ee36389921a4dbfc4f3f907dee2d, type: 3}
-  m_Name: yeonglong_TEST
+  m_Name: 8. WalkToHome
   m_EditorClassIdentifier: Assembly-CSharp::DialogueDataSO
   dialogues:
-  - "\uD14C\uC2A4\uD2B81"
-  - "\u3141\u3134\u3147\u3139"
+  - ......
+  - "\uD798\uB4E4\uC5B4 \uD558\uB124... \uADF8\uB0E5 \uC9D1\uC5D0 \uAC00\uC790"
