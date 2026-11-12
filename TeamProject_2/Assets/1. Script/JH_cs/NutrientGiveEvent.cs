@@ -33,6 +33,10 @@ public class NutrientGiveEvent : MonoBehaviour
     public DialogueDataSO afterDialogue;    // "이제 방으로 가서 누워야겠다."
     public DialogueDataSO tooFarDialogue;   // (선택) 멀리서 썼을 때 대사
 
+    [Header("길막 풀기")]
+    // 여기에 넣은 대사를 쓰는 TriggerDialogue(길막)를 씬에서 전부 찾아 충돌 판정을 끔
+    public DialogueDataSO[] unlockTriggerDialogues;
+
     [Header("끝났을 때 실행할 것 (선택)")]
     public UnityEvent onFinished;
 
@@ -83,8 +87,9 @@ public class NutrientGiveEvent : MonoBehaviour
             return;
         }
 
-        bool nearDog = player != null && dog != null &&
-                       Vector2.Distance(player.position, dog.position) <= giveDistance;
+        float dist = (player != null && dog != null)
+            ? Vector2.Distance(player.position, dog.position) : 9999f;
+        bool nearDog = dist <= giveDistance;
 
         if (!nearDog)
         {
@@ -137,7 +142,33 @@ public class NutrientGiveEvent : MonoBehaviour
         isDone = true;
         isPlaying = false;
 
+        UnlockTriggers();
+
         onFinished?.Invoke();
+    }
+
+    // 지정한 대사를 쓰는 길막 트리거를 모두 찾아서 충돌 판정 끄기
+    private void UnlockTriggers()
+    {
+        if (unlockTriggerDialogues == null || unlockTriggerDialogues.Length == 0) return;
+
+        TriggerDialogue[] triggers = FindObjectsByType<TriggerDialogue>(
+            FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+        foreach (TriggerDialogue t in triggers)
+        {
+            if (t == null || t.dialogue == null) continue;
+
+            foreach (DialogueDataSO d in unlockTriggerDialogues)
+            {
+                if (d == null || t.dialogue != d) continue;
+
+                foreach (Collider2D c in t.GetComponents<Collider2D>())
+                    c.enabled = false;
+
+                break;
+            }
+        }
     }
 
     private void OnDrawGizmosSelected()
