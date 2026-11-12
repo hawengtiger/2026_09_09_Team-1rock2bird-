@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: WakeUpDialogue
   m_EditorClassIdentifier: Assembly-CSharp::DialogueDataSO
   dialogues:
-  - "\uD558\uC544.. \uBB3C\uC744 \uB9C8\uC154\uC57C\uACA0\uB2E4."
+  - "\uD558\uC554.. \uC8FC\uBC29\uC73C\uB85C \uAC00\uC11C \uBB3C \uC880 \uB9C8\uC154\uC57C\uACA0\uB2E4."
