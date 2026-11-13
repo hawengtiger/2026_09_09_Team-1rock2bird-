@@ -121,8 +121,10 @@ public class WalkReturnEvent : MonoBehaviour
 
         if (walkToSofa && dog != null && player != null)
         {
-            Vector3 drop = player.position + dropOffset;
-            drop.z = dog.position.z;
+            // 높이(Y)는 영롱이가 원래 서 있던 바닥 높이를 유지 → 위에서 떨어지지 않게
+            Vector3 drop = new Vector3(player.position.x + dropOffset.x,
+                                       dog.position.y + dropOffset.y,
+                                       dog.position.z);
             dog.position = drop;
         }
         if (dogSpriteRenderer != null) dogSpriteRenderer.enabled = true;
