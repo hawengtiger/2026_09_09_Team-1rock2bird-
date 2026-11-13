@@ -1147,6 +1147,7 @@ MonoBehaviour:
   resetContainerRotation: 1
   graphicRaycaster: {fileID: 1713124157}
   pieces: []
+  rewardItemID: 1
   messageText: {fileID: 933620041}
   solvedMessage: "\uD37C\uC990 \uC644\uC131! F\uB97C \uB20C\uB7EC\uC11C \uB2EB\uACE0
     \uD50C\uB808\uC774\uC5B4\uB85C \uB3CC\uC544\uAC00\uC138\uC694."
@@ -1562,6 +1563,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e32d1a24044913346bfbf73bee662c3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerWalkChange
+  trigger: {fileID: 556930688}
   playerAnimator: {fileID: 1534192634}
   isHug: 1
   isWalk: 0
@@ -3601,6 +3603,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e32d1a24044913346bfbf73bee662c3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerWalkChange
+  trigger: {fileID: 0}
   playerAnimator: {fileID: 1534192634}
   isHug: 0
   isWalk: 1

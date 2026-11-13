@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class PlayerWalkChange : MonoBehaviour
 {
+    public GameObject trigger;
+
     [Header("플레이어 애니메이터")]
     public Animator playerAnimator;
 
@@ -23,6 +25,8 @@ public class PlayerWalkChange : MonoBehaviour
     {
         if (!other.CompareTag("Player"))
             return;
+
+        trigger.SetActive(false);
 
         if (CompareTag("Walk"))
         {
