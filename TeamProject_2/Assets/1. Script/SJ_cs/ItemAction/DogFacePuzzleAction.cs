@@ -31,6 +31,9 @@ public class DogFacePuzzleAction : ItemAction
     [Header("강아지 목표 생성")]
     public DogPosMove dogPosMove;
 
+    [Header("2번 퍼즐 트리거")]
+    public DogPuzzleTest dogPuzzleTest;
+
     [Header("성공 횟수별 이벤트")]
     public List<DogPuzzleData> successEvents = new();
 
@@ -55,9 +58,7 @@ public class DogFacePuzzleAction : ItemAction
         if (pickupItem == null)
             pickupItem = GetComponent<PickupItem>();
 
-        // 이미 완료된 퍼즐은 건너뛰기
         CheckCompletedPuzzle();
-
         UpdateInteractionUI();
     }
 
@@ -69,7 +70,7 @@ public class DogFacePuzzleAction : ItemAction
         if (petPuzzleManager == null)
             return;
 
-        // 결과 화면에서 F키 처리
+        // 퍼즐 결과 화면
         if (petPuzzleManager.currentState == PuzzleState.ResultWait)
         {
             if (!resultHandled)
@@ -88,9 +89,24 @@ public class DogFacePuzzleAction : ItemAction
                 // 결과 화면 닫기
                 petPuzzleManager.Interact();
 
+                // 동일 프레임 재시작 방지
+                if (dogPuzzleTest != null)
+                    dogPuzzleTest.NotifyResultClosed();
+
                 if (isSuccess)
                 {
+                    // 2번 퍼즐 성공 시 Hug + 이동 잠금 해제
+                    if (successCount == 1 && dogPuzzleTest != null)
+                    {
+                        dogPuzzleTest.CompletePuzzle();
+                    }
+
+                    // 성공 다이얼로그 및 기존 이벤트
                     SuccessEvent();
+                }
+                else
+                {
+                    Debug.Log("퍼즐 실패! F키로 다시 도전 가능");
                 }
 
                 isSuccess = false;
@@ -117,10 +133,10 @@ public class DogFacePuzzleAction : ItemAction
         }
     }
 
-    // 현재 퍼즐이 실행 가능한가?
     public bool CanStartPuzzle()
     {
-        if (successCount < 0 || successCount >= successEvents.Count)
+        if (successCount < 0 ||
+            successCount >= successEvents.Count)
             return false;
 
         DogPuzzleData data = successEvents[successCount];
@@ -128,7 +144,6 @@ public class DogFacePuzzleAction : ItemAction
         return data.isStartPuzzle && !data.isEndPuzzle;
     }
 
-    // 완료된 퍼즐은 다음 인덱스로 이동
     private void CheckCompletedPuzzle()
     {
         while (successCount < successEvents.Count &&
@@ -140,21 +155,34 @@ public class DogFacePuzzleAction : ItemAction
         }
     }
 
-    // 상호작용 UI 갱신
     private void UpdateInteractionUI()
     {
-        if (pickupItem == null || pickupItem.PickupState == null)
+        if (pickupItem == null ||
+            pickupItem.PickupState == null)
             return;
 
         bool canPuzzle = CanStartPuzzle();
 
-        // 인벤토리 약 사용은 별도로 검사
         bool canMedicine =
             DogMedicineAction.Current != null &&
             DogMedicineAction.Current.CanTalkToDog();
 
-        // 퍼즐 또는 약 먹이기 중 하나라도 가능하면 표시
-        bool showUI = isPlayerNearby && (canPuzzle || canMedicine);
+        bool canCarry =
+            DogMedicineAction.Current != null &&
+            DogMedicineAction.Current.CanCarryDog();
+
+        bool showUI =
+            (isPlayerNearby && (canPuzzle || canMedicine)) ||
+            canCarry;
+
+        // 2번 퍼즐이 실행 중이거나 성공했다면
+        // 기존 Dog 상호작용 UI는 표시하지 않음
+        if (dogPuzzleTest != null &&
+            petPuzzleManager != null &&
+            petPuzzleManager.currentState != PuzzleState.WaitToEnter)
+        {
+            showUI = false;
+        }
 
         if (pickupItem.PickupState.activeSelf != showUI)
         {
@@ -162,40 +190,56 @@ public class DogFacePuzzleAction : ItemAction
         }
     }
 
-    // 퍼즐 성공 이벤트
     private void SuccessEvent()
     {
         if (!CanStartPuzzle())
             return;
 
+        int completedPuzzleIndex = successCount;
+
         DogPuzzleData data = successEvents[successCount];
 
-        // 현재 퍼즐 완료 처리
         data.isEndPuzzle = true;
         data.isStartPuzzle = false;
 
-        // 성공 다이얼로그
-        if (textTyping != null && data.successDialogue != null)
+        // 성공 다이얼로그 실행
+        if (textTyping != null &&
+            data.successDialogue != null)
         {
             textTyping.StartDialogue(data.successDialogue);
         }
 
-        // 스토리 종료 후 강아지 이동
-        StartCoroutine(DelayTime(data));
+        StartCoroutine(
+            DelayTime(data, completedPuzzleIndex)
+        );
 
-        // 다음 퍼즐로 이동
         CheckCompletedPuzzle();
-
         UpdateInteractionUI();
     }
 
-    private IEnumerator DelayTime(DogPuzzleData data)
+    private IEnumerator DelayTime(
+        DogPuzzleData data,
+        int completedPuzzleIndex)
     {
-        // 스토리가 끝날 때까지 대기
-        yield return new WaitUntil(() =>
-            darkUI == null || !darkUI.isStory
-        );
+        yield return null;
 
+        // 성공 다이얼로그 종료 대기
+        if (darkUI != null &&
+            data.successDialogue != null)
+        {
+            yield return new WaitUntil(
+                () => !darkUI.isStory
+            );
+        }
+
+        // 2번 퍼즐은 이미 성공 순간에 Hug + 이동 복구 완료
+        if (completedPuzzleIndex == 1)
+        {
+            Debug.Log("2번 퍼즐 성공 다이얼로그 종료");
+            yield break;
+        }
+
+        // 다른 퍼즐은 기존 강아지 이동 실행
         if (dogPosMove != null)
         {
             dogPosMove.SpawnTarget(
@@ -209,7 +253,7 @@ public class DogFacePuzzleAction : ItemAction
 
     public override void Execute(PickupItem item)
     {
-        // 약을 가지고 영롱이와 대화할 수 있다면
+        // 약을 가지고 영롱이와 대화
         if (DogMedicineAction.Current != null &&
             DogMedicineAction.Current.CanTalkToDog())
         {
@@ -217,65 +261,62 @@ public class DogFacePuzzleAction : ItemAction
             return;
         }
 
-        // 같은 프레임에 아이템을 사용했다면 퍼즐 실행 금지
         if (InventoryUI.LastItemUseFrame == Time.frameCount)
             return;
 
-        if (!CanStartPuzzle() || petPuzzleManager == null)
+        if (!CanStartPuzzle() ||
+            petPuzzleManager == null)
             return;
 
-        // 결과 화면은 Update()에서만 처리
-        if (petPuzzleManager.currentState == PuzzleState.ResultWait)
+        if (petPuzzleManager.currentState != PuzzleState.WaitToEnter)
             return;
 
-        // 이미 퍼즐 진행 중이라면 다시 열지 않기
-        if (petPuzzleManager.currentState == PuzzleState.PuzzleActive)
-            return;
-
-        // 퍼즐 시작
         petPuzzleManager.Interact();
     }
 
-    // 원하는 번호의 퍼즐 활성화
     public void StartPuzzle(int index)
     {
         if (index < 0 || index >= successEvents.Count)
         {
-            Debug.LogWarning($"존재하지 않는 퍼즐 인덱스: {index}");
+            Debug.LogWarning(
+                $"존재하지 않는 퍼즐 인덱스: {index}"
+            );
             return;
         }
 
         if (successEvents[index].isEndPuzzle)
         {
-            Debug.Log($"이미 완료된 퍼즐입니다: {index}");
+            Debug.Log(
+                $"이미 완료된 퍼즐입니다: {index}"
+            );
             return;
         }
 
         if (petPuzzleManager == null)
         {
-            Debug.LogWarning("PetPuzzleManager가 연결되지 않았습니다.");
+            Debug.LogWarning(
+                "PetPuzzleManager가 연결되지 않았습니다."
+            );
             return;
         }
 
         if (petPuzzleManager.currentState != PuzzleState.WaitToEnter)
         {
-            Debug.LogWarning("현재 퍼즐이 진행 중입니다.");
+            Debug.LogWarning(
+                "현재 퍼즐이 진행 중입니다."
+            );
             return;
         }
 
-        // 실제 질문, 선택지, 표정의 인덱스도 변경
         petPuzzleManager.SetPuzzle(index);
 
-        // 현재 스토리 퍼즐 인덱스 변경
         successCount = index;
 
-        // 모든 퍼즐 비활성화
         for (int i = 0 ; i < successEvents.Count ; i++)
         {
             successEvents[i].isStartPuzzle = false;
         }
 
-        // 해당 퍼즐만 활성화
         successEvents[index].isStartPuzzle = true;
 
         UpdateInteractionUI();
@@ -283,7 +324,6 @@ public class DogFacePuzzleAction : ItemAction
         Debug.Log($"{index + 1}번 제스처 퍼즐 활성화!");
     }
 
-    // 현재 퍼즐 활성화
     public void EnableInteraction()
     {
         CheckCompletedPuzzle();
@@ -294,7 +334,6 @@ public class DogFacePuzzleAction : ItemAction
         StartPuzzle(successCount);
     }
 
-    // 현재 퍼즐 비활성화
     public void DisableInteraction()
     {
         if (successCount >= successEvents.Count)
@@ -305,7 +344,6 @@ public class DogFacePuzzleAction : ItemAction
         UpdateInteractionUI();
     }
 
-    // 현재 퍼즐 인덱스 확인
     public int GetCurrentPuzzleIndex()
     {
         return successCount;
