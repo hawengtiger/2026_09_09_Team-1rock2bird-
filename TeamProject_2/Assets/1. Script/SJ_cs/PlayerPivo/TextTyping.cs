@@ -1,4 +1,4 @@
-
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
@@ -13,7 +13,10 @@ public enum TextState
 
 public class TextTyping : MonoBehaviour
 {
-    [Header("텍스트")]
+    // 대화 종료 이벤트
+    public event Action OnDialogueFinished;
+
+    [Header("모놀로그 텍스트")]
     public TextMeshPro textMesh;
 
     [Header("대사 데이터")]
@@ -22,47 +25,100 @@ public class TextTyping : MonoBehaviour
     [Header("스토리 UI 효과")]
     public DarkUIEffect darkUIEffect;
 
+    [Header("플레이어 화자 (A)")]
+    public DialogueSpeaker playerSpeaker;
+
+    [Header("현재 대화 상대 NPC (B)")]
+    public DialogueSpeaker npcSpeaker;
+
     [Header("타이핑 속도")]
     public float typingSpeed = 0.1f;
 
     [Header("삭제 속도")]
     public float deleteSpeed = 0.05f;
 
-    public TextState currentState { get; private set; } = TextState.Idle;
+    public TextState currentState { get; private set; }
+        = TextState.Idle;
 
     private Coroutine typingCoroutine;
     private int currentDialogueIndex = 0;
     private bool isFinished = true;
 
+    // 현재 대사를 출력할 텍스트
+    private TMP_Text currentText;
+
+    // 다른 스크립트에서 진행 여부 확인
+    public bool IsPlaying => !isFinished;
+
     private void Start()
     {
-        textMesh.text = "";
+        ClearAllTexts();
     }
 
     private void Update()
     {
-        // 스토리가 진행 중이 아니면 입력 무시
         if (isFinished)
             return;
 
-        // 좌클릭 또는 Z키 : 대사 진행 
-        if ((Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)  || Keyboard.current.zKey.wasPressedThisFrame)
+        if (Keyboard.current != null &&
+            Keyboard.current.xKey.wasPressedThisFrame)
+        {
+            FinishDialogue();
+            return;
+        }
+
+        // 좌클릭 또는 Z키 : 다음 대사
+        bool mouseClick =
+            Mouse.current != null &&
+            Mouse.current.leftButton.wasPressedThisFrame;
+
+        bool zKey =
+            Keyboard.current != null &&
+            Keyboard.current.zKey.wasPressedThisFrame;
+
+        if (mouseClick || zKey)
         {
             NextDialogue();
         }
+    }
 
-        // X키 : 현재 출력 또는 삭제 즉시 완료
-        if (Keyboard.current != null && Keyboard.current.xKey.wasPressedThisFrame)
+    // 현재 대화 상대 변경
+    public bool SetSpeakers(DialogueSpeaker npc)
+    {
+        if (IsPlaying)
         {
-            FinishDialogue();
+            Debug.LogWarning(
+                "대사 진행 중에는 NPC를 변경할 수 없습니다.");
+            return false;
         }
+
+        // 이전 NPC 텍스트 제거
+        if (npcSpeaker != null)
+        {
+            npcSpeaker.ClearText();
+        }
+
+        npcSpeaker = npc;
+
+        return true;
     }
 
     // 스토리 시작
-    public void StartDialogue(DialogueDataSO data)
+    public bool StartDialogue(DialogueDataSO data)
     {
-        if (data == null || data.dialogues == null || data.dialogues.Count == 0)
-            return;
+        if (IsPlaying)
+        {
+            Debug.LogWarning("이미 대사가 진행 중입니다.");
+            return false;
+        }
+
+        if (data == null ||
+            data.dialogues == null ||
+            data.dialogues.Count == 0)
+        {
+            Debug.LogWarning("대사 데이터가 없습니다.");
+            return false;
+        }
 
         StopCurrentCoroutine();
 
@@ -71,31 +127,76 @@ public class TextTyping : MonoBehaviour
         isFinished = false;
         currentState = TextState.Idle;
 
-        textMesh.text = "";
+        ClearAllTexts();
 
-        // 스토리 시작
         if (darkUIEffect != null)
         {
             darkUIEffect.isStory = true;
         }
 
         PlayTyping();
+
+        return !isFinished;
     }
 
-    // 좌클릭으로 다음 대사 진행
+    // 현재 대사의 출력 대상 설정
+    private void SetCurrentText()
+    {
+        DialogueSetting setting =
+            dialogueData.GetSetting(currentDialogueIndex);
+
+        // 이전 출력 내용 초기화
+        ClearAllTexts();
+
+        if (setting.dialogueType == DialogueType.Monologue)
+        {
+            currentText = textMesh;
+            return;
+        }
+
+        // 다이얼로그일 경우 A/B 선택
+        DialogueSpeaker speaker =
+            setting.bubbleType == BubbleType.A
+            ? playerSpeaker
+            : npcSpeaker;
+
+        if (speaker == null)
+        {
+            currentText = null;
+            Debug.LogWarning("DialogueSpeaker가 없습니다.");
+            return;
+        }
+
+        currentText = speaker.dialogueText;
+    }
+
+    // 모든 텍스트 초기화
+    private void ClearAllTexts()
+    {
+        if (textMesh != null)
+            textMesh.text = "";
+
+        if (playerSpeaker != null)
+            playerSpeaker.ClearText();
+
+        if (npcSpeaker != null)
+            npcSpeaker.ClearText();
+    }
+
+    // 다음 대사 진행
     public void NextDialogue()
     {
         if (isFinished)
             return;
 
-        // 출력 중이면 현재 문장 즉시 완성
+        // 출력 중이면 문장 즉시 완성
         if (currentState == TextState.Typing)
         {
             SkipText();
             return;
         }
 
-        // 삭제 중에는 중복 입력 방지
+        // 삭제 중이면 삭제 즉시 완료
         if (currentState == TextState.Deleting)
         {
             SkipText();
@@ -113,6 +214,17 @@ public class TextTyping : MonoBehaviour
             return;
 
         StopCurrentCoroutine();
+
+        SetCurrentText();
+
+        if (currentText == null)
+        {
+            Debug.LogError(
+                "대사를 출력할 TextMeshPro가 할당되지 않았습니다.");
+
+            FinishDialogue();
+            return;
+        }
 
         currentState = TextState.Typing;
         typingCoroutine = StartCoroutine(Typing());
@@ -133,13 +245,14 @@ public class TextTyping : MonoBehaviour
     // 한 글자씩 출력
     private IEnumerator Typing()
     {
-        textMesh.text = "";
+        currentText.text = "";
 
-        string dialogue = dialogueData.dialogues[currentDialogueIndex];
+        string dialogue =
+            dialogueData.dialogues[currentDialogueIndex] ?? "";
 
         for (int i = 0 ; i < dialogue.Length ; i++)
         {
-            textMesh.text += dialogue[i];
+            currentText.text += dialogue[i];
 
             yield return new WaitForSeconds(typingSpeed);
         }
@@ -151,21 +264,34 @@ public class TextTyping : MonoBehaviour
     // 뒤에서부터 한 글자씩 삭제
     private IEnumerator Delete()
     {
-        while (textMesh.text.Length > 0)
+        if (currentText != null)
         {
-            textMesh.text = textMesh.text.Substring(0, textMesh.text.Length - 1);
+            while (currentText.text.Length > 0)
+            {
+                currentText.text =
+                    currentText.text.Substring(
+                        0,
+                        currentText.text.Length - 1
+                    );
 
-            yield return new WaitForSeconds(deleteSpeed);
+                yield return new WaitForSeconds(deleteSpeed);
+            }
         }
 
         typingCoroutine = null;
         currentState = TextState.Idle;
 
-        // 마지막 대사라면 스토리 종료
-        if (currentDialogueIndex + 1 >= dialogueData.dialogues.Count)
+        AdvanceAfterDelete();
+    }
+
+    // 삭제 완료 후 다음 대사 또는 종료
+    private void AdvanceAfterDelete()
+    {
+        if (currentDialogueIndex + 1 >=
+            dialogueData.dialogues.Count)
         {
             FinishDialogue();
-            yield break;
+            return;
         }
 
         MoveNextDialogue();
@@ -206,25 +332,24 @@ public class TextTyping : MonoBehaviour
         {
             case TextState.Typing:
 
-                textMesh.text = dialogueData.dialogues[currentDialogueIndex];
-                currentState = TextState.Idle;
+                if (currentText != null)
+                {
+                    currentText.text =
+                        dialogueData.dialogues[
+                            currentDialogueIndex] ?? "";
+                }
 
+                currentState = TextState.Idle;
                 break;
 
             case TextState.Deleting:
 
-                textMesh.text = "";
+                if (currentText != null)
+                    currentText.text = "";
+
                 currentState = TextState.Idle;
 
-                if (currentDialogueIndex + 1 >= dialogueData.dialogues.Count)
-                {
-                    FinishDialogue();
-                }
-                else
-                {
-                    MoveNextDialogue();
-                }
-
+                AdvanceAfterDelete();
                 break;
         }
     }
@@ -232,20 +357,26 @@ public class TextTyping : MonoBehaviour
     // 모든 대사 종료
     private void FinishDialogue()
     {
-        StopCurrentCoroutine();     // 실행 중인 코루틴 강제 정지
+        if (isFinished)
+            return;
+
+        StopCurrentCoroutine();
 
         isFinished = true;
         currentState = TextState.Idle;
         typingCoroutine = null;
+        currentText = null;
 
-        textMesh.text = "";
+        ClearAllTexts();
 
-        // 스토리 종료
         if (darkUIEffect != null)
         {
             darkUIEffect.isStory = false;
         }
 
         Debug.Log("모든 대사 종료");
+
+        // 대화 종료를 Trigger에 알림
+        OnDialogueFinished?.Invoke();
     }
 }

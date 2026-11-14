@@ -33,6 +33,9 @@ public class PetPuzzleData
     [TextArea(2, 4)]
     public string failText = "실패! 영룡이가 경멸하는 표정을 짓습니다.";
 
+    [Header("강아지 몸 이미지")]
+    public Sprite bodySprite;
+
     [Header("강아지 표정")]
     public Sprite idleFace;
     public Sprite wantFace;
@@ -62,6 +65,9 @@ public class PetPuzzleManager : MonoBehaviour
 
     [Header("강아지 표정 - 표시 대상")]
     public Image petFaceImage;
+
+    [Header("강아지 몸 - 표시 대상")]
+    public Image petbodyImage;
 
     [Header("사운드")]
     public AudioSource audioSource;
@@ -129,7 +135,10 @@ public class PetPuzzleManager : MonoBehaviour
             petRoot.SetActive(false);
 
         if (CurrentPuzzle != null)
+        {
             SetPetFace(CurrentPuzzle.idleFace);
+            SetPetBody(CurrentPuzzle.bodySprite);
+        }
     }
 
     private void EnterPuzzle()
@@ -154,6 +163,7 @@ public class PetPuzzleManager : MonoBehaviour
         UpdatePuzzleUI();
 
         SetPetFace(CurrentPuzzle.wantFace);
+        SetPetBody(CurrentPuzzle.bodySprite);
 
         if (audioSource != null && kkiingSound != null)
             audioSource.PlayOneShot(kkiingSound);
@@ -354,7 +364,18 @@ public class PetPuzzleManager : MonoBehaviour
         currentPuzzleIndex = index;
 
         SetPetFace(CurrentPuzzle.idleFace);
+        SetPetBody(CurrentPuzzle.bodySprite);
 
         Debug.Log($"{index + 1}번 퍼즐로 변경!");
     }
+
+    private void SetPetBody(Sprite body)
+    {
+        if (body == null)
+            return;
+
+        if (petbodyImage != null)
+            petbodyImage.sprite = body;
+    }
+
 }
