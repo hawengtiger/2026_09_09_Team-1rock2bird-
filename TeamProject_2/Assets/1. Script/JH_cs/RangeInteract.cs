@@ -24,6 +24,13 @@ public class RangeInteract : MonoBehaviour
 
     private Transform player;
     private bool used = false;
+    private float shownTime = 0f;               // F 표시가 떠 있던 시간 (뜨자마자 눌리는 것 방지)
+    private const float minShowTime = 0.3f;
+
+    private void OnEnable()
+    {
+        shownTime = 0f;
+    }
 
     private void Start()
     {
@@ -62,7 +69,11 @@ public class RangeInteract : MonoBehaviour
         if (prompt != null && prompt.activeSelf != canUse)
             prompt.SetActive(canUse);
 
-        if (canUse && Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame)
+        shownTime = canUse ? shownTime + Time.deltaTime : 0f;
+
+        // F 표시가 0.3초 이상 보인 뒤에 누른 F만 인정
+        if (canUse && shownTime >= minShowTime &&
+            Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame)
             Interact();
     }
 

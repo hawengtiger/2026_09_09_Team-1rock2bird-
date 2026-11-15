@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -6,7 +7,8 @@ using UnityEngine.UI;
 using TMPro;
 
 // 상자 렌즈 기믹 (공간 맞추기 퍼즐의 UI 버전)
-// 클릭 = 놓을 자리 선택 / 1~2 = 아이템 선택 / E = 놓기 / 우클릭·ESC = 닫기
+// 클릭 = 놓을 자리 선택 / 1~2 = 인벤토리(오른쪽 위) 슬롯 선택 / E = 놓기 / 우클릭·ESC = 닫기
+// 아이템 선택은 팀원이 만든 InventoryUI의 선택 슬롯을 그대로 읽어서 씀 (InventoryUI 스크립트는 안 건드림)
 // 옷장의 RangeInteract → On Interact에서 Open()을 부름
 public class BoxLensPuzzle : MonoBehaviour
 {
@@ -25,7 +27,7 @@ public class BoxLensPuzzle : MonoBehaviour
     {
         public int itemID;                      // 1번 키 = 첫 번째, 2번 키 = 두 번째
         public string itemName = "아이템";
-        public Image slotImage;                 // 퍼즐 화면 안 아이템 칸
+        public Image slotImage;                 // (선택) 퍼즐 화면 안 아이템 칸 - 비워둬도 됨
     }
 
     [Header("퍼즐 화면")]
@@ -55,10 +57,16 @@ public class BoxLensPuzzle : MonoBehaviour
     private bool isSolved = false;
     private float messageTimer = 0f;
     private PlayerController player;
+    private InventoryUI inventoryUI;
+    private FieldInfo selectedSlotField;
+    private FieldInfo slotItemsField;
 
     private void Start()
     {
         player = MemoryUI.FindPlayer();
+        inventoryUI = FindAnyObjectByType<InventoryUI>(FindObjectsInactive.Include);
+        selectedSlotField = typeof(InventoryUI).GetField("selectedSlot", BindingFlags.NonPublic | BindingFlags.Instance);
+        slotItemsField = typeof(InventoryUI).GetField("slotItems", BindingFlags.NonPublic | BindingFlags.Instance);
         if (puzzlePanel != null) puzzlePanel.SetActive(false);
 
         foreach (Spot s in spots)
@@ -138,27 +146,42 @@ public class BoxLensPuzzle : MonoBehaviour
         if (mouse.rightButton.wasPressedThisFrame || kb.escapeKey.wasPressedThisFrame) Close();
     }
 
+    // 인벤토리 UI(오른쪽 위)에서 지금 선택된 아이템 ID. 없으면 -1
+    private int GetInventorySelectedID()
+    {
+        if (inventoryUI == null || selectedSlotField == null || slotItemsField == null) return -1;
+
+        int slot = (int)selectedSlotField.GetValue(inventoryUI);
+        Inventory.ItemData[] slotItems = slotItemsField.GetValue(inventoryUI) as Inventory.ItemData[];
+        if (slot < 0 || slotItems == null || slot >= slotItems.Length) return -1;
+
+        Inventory.ItemData data = slotItems[slot];
+        if (data == null || data.itemCount <= 0) return -1;
+        return (int)data.itemID;
+    }
+
     private void TryPlace()
     {
         if (selectedSpot == null) { ShowMessage(selectSpotMessage); return; }
-        if (items == null || items.Length == 0) return;
 
-        ItemSlot item = items[selectedItem];
+        int itemID = GetInventorySelectedID();
+        if (itemID < 0 && inventoryUI == null && items != null && items.Length > 0)
+            itemID = items[selectedItem].itemID;   // InventoryUI가 없을 때만 예비용
 
-        if (Inventory.Instance == null || Inventory.Instance.GetItemCount(item.itemID) <= 0)
+        if (itemID < 0 || Inventory.Instance == null || Inventory.Instance.GetItemCount(itemID) <= 0)
         {
-            ShowMessage("이미 사용한 아이템이다.");
+            ShowMessage("1·2번 키로 인벤토리 아이템을 먼저 고르자.");
             return;
         }
 
-        if (item.itemID != selectedSpot.requiredItemID)
+        if (itemID != selectedSpot.requiredItemID)
         {
             ShowMessage(wrongMessage);
             return;
         }
 
         // 배치 성공 → 인벤토리에서 빼기
-        Inventory.Instance.RemoveItem(item.itemID, 1);
+        Inventory.Instance.RemoveItem(itemID, 1);
         selectedSpot.filled = true;
         if (selectedSpot.placedImage != null) selectedSpot.placedImage.SetActive(true);
         selectedSpot = null;
@@ -186,6 +209,7 @@ public class BoxLensPuzzle : MonoBehaviour
         foreach (Spot s in spots)
             if (s.highlight != null) s.highlight.enabled = (s == selectedSpot);
 
+        if (items == null) return;
         for (int i = 0; i < items.Length; i++)
         {
             if (items[i].slotImage == null) continue;

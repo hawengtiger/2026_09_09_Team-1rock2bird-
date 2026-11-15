@@ -4,12 +4,14 @@ using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 // 바닥에 떨어진 사진 F → 네컷 사진 팝업 (아래에 영롱이 날짜)
-// → 아무 곳이나 클릭하면 닫힘 → 바로 대사 출력 ("아... 맞다." ...)
+// → 사진 바깥(빈 곳)을 클릭하면 닫힘 → 바로 대사 출력 ("아... 맞다." ...)
+// 사진을 보는 동안은 플레이어가 못 움직임
 // 바닥 사진의 RangeInteract → On Interact에서 Open()을 부름
 public class PhotoPopupEvent : MonoBehaviour
 {
     [Header("팝업")]
     public GameObject popupPanel;               // 네컷 사진 + 날짜 + 안내 문구 (시작 시 꺼짐)
+    public RectTransform photoRect;             // 큰 사진 (비워두면 popupPanel 안의 "BigPhoto"를 찾음)
 
     [Header("닫은 뒤 대사")]
     public DialogueDataSO afterDialogue;        // "아... 맞다." / "..오늘 영롱이 49재지.." / ...
@@ -25,7 +27,15 @@ public class PhotoPopupEvent : MonoBehaviour
     {
         player = MemoryUI.FindPlayer();
         textTyping = FindAnyObjectByType<TextTyping>(FindObjectsInactive.Include);
-        if (popupPanel != null) popupPanel.SetActive(false);
+        if (popupPanel != null)
+        {
+            if (photoRect == null)
+            {
+                Transform t = popupPanel.transform.Find("BigPhoto");
+                if (t != null) photoRect = t as RectTransform;
+            }
+            popupPanel.SetActive(false);
+        }
     }
 
     public void Open()
@@ -43,8 +53,19 @@ public class PhotoPopupEvent : MonoBehaviour
         popupPanel.SetActive(true);
         yield return null;   // F 누른 프레임에 바로 닫히지 않게
 
-        // 아무 곳이나 클릭
-        yield return new WaitUntil(() => Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame);
+        // 사진 바깥 클릭 기다리기 (그동안 계속 못 움직이게)
+        while (true)
+        {
+            if (player != null) player.canMove = false;
+
+            if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+            {
+                Vector2 pos = Mouse.current.position.ReadValue();
+                if (photoRect == null || !RectTransformUtility.RectangleContainsScreenPoint(photoRect, pos, null))
+                    break;
+            }
+            yield return null;
+        }
 
         popupPanel.SetActive(false);
         MemoryUI.IsOpen = false;
@@ -56,7 +77,13 @@ public class PhotoPopupEvent : MonoBehaviour
             textTyping.StartDialogue(afterDialogue);
             yield return null;
             if (textTyping.darkUIEffect != null)
-                yield return new WaitUntil(() => !textTyping.darkUIEffect.isStory);
+            {
+                while (textTyping.darkUIEffect.isStory)
+                {
+                    if (player != null) player.canMove = false;
+                    yield return null;
+                }
+            }
         }
 
         if (player != null) player.canMove = true;

@@ -27,6 +27,10 @@ public class IntroPhotoEvent : MonoBehaviour
     public float swayAngle = 25f;               // 좌우로 흔들리는 각도
     public float swayWidth = 60f;               // 좌우로 흔들리는 폭
 
+    [Header("바닥 사진 (떨어진 자리로 옮김)")]
+    public Transform floorPhoto;                // 비워두면 이름이 "Floor_Photo"인 오브젝트를 찾음
+    public float floorPhotoXOffset = 0f;        // 떨어진 자리에서 좌우로 조금 옮기고 싶을 때
+
     [Header("끝났을 때 실행할 것")]
     public UnityEvent onReturnedToGame;         // 사진이 좌측 상단으로 간 뒤 (아이템 등장 등)
     public UnityEvent onPhotoDropped;           // 사진이 떨어진 뒤 (바닥 사진 아이템 켜기 등)
@@ -39,6 +43,12 @@ public class IntroPhotoEvent : MonoBehaviour
     {
         isReady = startReady;
         player = MemoryUI.FindPlayer();
+
+        if (floorPhoto == null)
+        {
+            foreach (RangeInteract r in FindObjectsByType<RangeInteract>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                if (r.gameObject.name == "Floor_Photo") { floorPhoto = r.transform; break; }
+        }
 
         if (photo != null) photo.gameObject.SetActive(false);
         if (guideText != null) guideText.SetActive(false);
@@ -115,6 +125,10 @@ public class IntroPhotoEvent : MonoBehaviour
 
     private IEnumerator FallSequence()
     {
+        // 떨어지는 동안은 못 움직임
+        MemoryUI.IsOpen = true;
+        if (player != null) player.canMove = false;
+
         Vector3 start = photo.position;
         float scale = photo.lossyScale.y;   // Canvas 크기에 맞춰 거리 보정
         float t = 0f;
@@ -132,15 +146,36 @@ public class IntroPhotoEvent : MonoBehaviour
             photo.position = start + new Vector3(sway * swayWidth * scale, -fallDistance * p * scale, 0f);
             photo.localRotation = Quaternion.Euler(0f, 0f, sway * swayAngle);
             cg.alpha = 1f - Mathf.Clamp01((p - 0.7f) / 0.3f);   // 끝부분에서 사라짐
+            if (player != null) player.canMove = false;
 
             yield return null;
         }
+
+        // 사진이 떨어진 화면 위치 → 바닥 사진을 그 x 위치로 옮김 (높이는 바닥 그대로)
+        PlaceFloorPhoto(photo.position);
 
         photo.gameObject.SetActive(false);
         cg.alpha = 1f;
         photo.localRotation = Quaternion.identity;
 
-        onPhotoDropped?.Invoke();
+        MemoryUI.IsOpen = false;
+        if (player != null) player.canMove = true;
+
+        onPhotoDropped?.Invoke();   // 바닥 사진(F) 켜기
+    }
+
+    private void PlaceFloorPhoto(Vector3 screenPos)
+    {
+        Camera cam = Camera.main;
+        if (floorPhoto == null || cam == null) return;
+
+        float depth = floorPhoto.position.z - cam.transform.position.z;
+        screenPos.x = Mathf.Clamp(screenPos.x, 0f, Screen.width);
+        Vector3 world = cam.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, depth));
+
+        Vector3 p = floorPhoto.position;
+        p.x = world.x + floorPhotoXOffset;
+        floorPhoto.position = p;
     }
 
     private IEnumerator MoveTo(RectTransform slot, float time)
