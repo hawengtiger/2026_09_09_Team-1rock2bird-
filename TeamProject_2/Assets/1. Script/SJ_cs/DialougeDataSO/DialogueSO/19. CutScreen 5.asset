@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69a9ee36389921a4dbfc4f3f907dee2d, type: 3}
+  m_Name: 19. CutScreen 5
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueDataSO
+  dialogues:
+  - "\uB9C8\uC74C\uC758 \uC900\uBE44\uB97C \uB05D\uB0C8\uB2E4\uACE0, \uC2A4\uC2A4\uB85C\uB97C
+    \uBA87 \uBC88\uC774\uACE0 \uB2E4\uB3C5\uC600\uB2E4."
+  - "\uC774\uC81C \uC815\uB9D0 \uB5A0\uB0A0 \uC900\uBE44\uAC00 \uB418\uC5C8\uB2E4\uACE0
+    \uB9D0\uD558\uBA70, \uC601\uB871\uC774\uC640 \uD568\uAED8 \uD654\uC7A5\uC2E4\uB85C
+    \uD5A5\uD588\uB2E4."
+  - "\uC608\uC05C \uAF43\uAC00\uB9C8\uB97C \uD0C0\uACE0 \uB728\uAC70\uC6B4 \uBD88\uAE38
+    \uC18D\uC73C\uB85C \uB4E4\uC5B4\uAC00\uC57C \uD560 \uC601\uB871\uC774\uB97C \uBCF4\uC790\uB9C8\uC790,
+    \uCC38\uC558\uB358 \uB208\uBB3C\uC774 \uB2E4\uC2DC \uC3DF\uC544\uC838 \uB0B4\uB838\uB2E4."
+  - "\uAE30\uACC4\uAC00 \uC791\uB3D9\uD558\uACE0, \uC601\uB871\uC774\uB294 \uC800
+    \uBA40\uB9AC \uBD88\uAE38 \uC18D\uC73C\uB85C \uC0AC\uB77C\uC838 \uAC14\uB2E4."
+  - "30\uBD84\uCBE4 \uC9C0\uB0AC\uC744\uAE4C, \uB9C8\uCE68\uB0B4 \uC601\uB871\uC774\uC758
+    \uC720\uACE8\uC774 \uB2F4\uAE34 \uACE0\uC6B4 \uBAA8\uC2B5\uC744 \uB9C8\uC8FC\uD588\uB2E4."
+  - "\uD3C9\uC18C \uBAB8\uC9D1\uC774 \uCEE4 \uB0B4 \uB450 \uD488\uC5D0 \uB2E4 \uC548\uAE30\uC9C0\uB3C4
+    \uC54A\uB358 \uC544\uC774\uC600\uB294\uB370, \uB0A8\uACA8\uC9C4 \uC720\uACE8\uC740
+    \uD55C \uC5C6\uC774 \uC791\uAE30\uB9CC \uD588\uB2E4."
+  dialogueSettings:
+  - dialogueType: 1
+    bubbleType: 1
+  - dialogueType: 1
+    bubbleType: 1
+  - dialogueType: 1
+    bubbleType: 1
+  - dialogueType: 1
+    bubbleType: 1
+  - dialogueType: 1
+    bubbleType: 1
+  - dialogueType: 1
+    bubbleType: 1
