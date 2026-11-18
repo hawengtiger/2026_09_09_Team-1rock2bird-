@@ -30,6 +30,9 @@ public class IntroPhotoEvent : MonoBehaviour
     [Header("바닥 사진 (떨어진 자리로 옮김)")]
     public Transform floorPhoto;                // 비워두면 이름이 "Floor_Photo"인 오브젝트를 찾음
     public float floorPhotoXOffset = 0f;        // 떨어진 자리에서 좌우로 조금 옮기고 싶을 때
+    public float floorMinX = -8.5f;             // 방 안 범위 (방 기준 로컬 X, 왼쪽 벽 안쪽)
+    public float floorMaxX = 8f;                // 방 안 범위 (오른쪽 벽/문 안쪽)
+    public float floorPhotoWidth = 1.2f;        // 바닥 사진 가로 크기 (월드 단위, 0이면 그대로)
 
     [Header("끝났을 때 실행할 것")]
     public UnityEvent onReturnedToGame;         // 사진이 좌측 상단으로 간 뒤 (아이템 등장 등)
@@ -176,6 +179,39 @@ public class IntroPhotoEvent : MonoBehaviour
         Vector3 p = floorPhoto.position;
         p.x = world.x + floorPhotoXOffset;
         floorPhoto.position = p;
+
+        // 벽 밖으로 나가지 않게 방 안으로 제한
+        Vector3 lp = floorPhoto.localPosition;
+        lp.x = Mathf.Clamp(lp.x, floorMinX, floorMaxX);
+        floorPhoto.localPosition = lp;
+
+        FitFloorPhotoSize();
+    }
+
+    // 바닥 사진 크기를 floorPhotoWidth에 맞춤 (자식 F 표시 크기는 그대로 유지)
+    private void FitFloorPhotoSize()
+    {
+        if (floorPhotoWidth <= 0f) return;
+        SpriteRenderer sr = floorPhoto.GetComponent<SpriteRenderer>();
+        if (sr == null || sr.sprite == null) return;
+
+        float spriteW = sr.sprite.bounds.size.x;
+        if (spriteW <= 0f) return;
+
+        Vector3[] childWorld = new Vector3[floorPhoto.childCount];
+        for (int i = 0; i < floorPhoto.childCount; i++) childWorld[i] = floorPhoto.GetChild(i).lossyScale;
+
+        float parentScale = floorPhoto.parent != null ? floorPhoto.parent.lossyScale.x : 1f;
+        float s = floorPhotoWidth / spriteW / parentScale;
+        floorPhoto.localScale = new Vector3(s, s, 1f);
+
+        for (int i = 0; i < floorPhoto.childCount; i++)
+        {
+            Transform c = floorPhoto.GetChild(i);
+            Vector3 w = childWorld[i];
+            Vector3 ps = floorPhoto.lossyScale;
+            c.localScale = new Vector3(w.x / ps.x, w.y / ps.y, 1f);
+        }
     }
 
     private IEnumerator MoveTo(RectTransform slot, float time)
