@@ -4,62 +4,102 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using TMPro;
 
-// 거실로 나가면 → 대사 "...어" → 일러스트 3장 → 하얀 배경 내레이션 → 일러스트 2장 → 게임 시작 씬
-// 모든 전환은 크로스 페이드. 각 장면은 시간이 지나거나 클릭하면 넘어감.
-// 사용법: 거실 입구를 덮는 Box Collider 2D(Is Trigger) 오브젝트에 붙이고,
-//        PhotoPopupEvent → On Finished에서 SetReady() 연결
+// [엔딩] 네컷 사진 대사가 끝나면(SetReady) 방 문(RoomDoor)에서 F → 거실로 나감
+// → 대사 "...어" → 일러스트 3장 → 하얀 배경 내레이션 → 일러스트 2장 → 게임 시작 씬
+// 일러스트가 비어 있으면 그 자리는 흰 화면으로 대신 보여줌 (나중에 그림만 넣으면 됨)
+// 퍼즐(사진 대사)이 끝나기 전에는 문 쪽은 원래(팀원) 동작 그대로
 [RequireComponent(typeof(Collider2D))]
 public class EndingSequence : MonoBehaviour
 {
     [Header("사용 가능 여부")]
     public bool startReady = false;
 
+    [Header("문으로 나가기")]
+    public string doorObjectName = "RoomDoor";  // 방 문 오브젝트 이름
+    public float doorRange = 2.5f;              // 이 거리 안에서 F
+    public Transform exitPoint;                 // 나갔을 때 설 위치 (비우면 문 DoorAction의 Target Door)
+
     [Header("대사")]
     public DialogueDataSO enterDialogue;        // "...어"
 
     [Header("컷씬 UI")]
-    public GameObject cutsceneRoot;             // 컷씬 전체 부모 (시작 시 꺼짐, Canvas 맨 위)
-    public Image blackBackground;               // 화면 전체 검은 배경
-    public Image layerA;                        // 일러스트 표시용 (크로스 페이드용으로 2장)
+    public GameObject cutsceneRoot;
+    public Image blackBackground;
+    public Image layerA;
     public Image layerB;
-    public Image whitePanel;                    // 내레이션용 하얀 배경
+    public Image whitePanel;
     public TMP_Text narrationText;
 
-    [Header("일러스트 / 내레이션")]
-    public Sprite[] firstIllustrations;         // 1차 일러스트 3장
-    [TextArea] public string[] narrationLines =
+    [Header("일러스트 (비우면 흰 화면으로 대신)")]
+    public Sprite[] firstIllustrations;
+    public int firstCount = 3;                  // 그림이 없을 때 흰 화면 장 수
+    [TextArea] public string[] endingLines =
     {
-        "내가 우울해할수록 영롱이는 슬퍼하겠지?",
-        "우울해하지 않을게 영롱아"
+        "내가 우울해 할 수록 영롱이는 슬퍼하겠지?",
+        "나 다시 힘내볼게 영롱아"
     };
-    public Sprite[] secondIllustrations;        // 2차 일러스트 2장
+    public Sprite[] secondIllustrations;
+    public int secondCount = 2;
 
     [Header("시간")]
-    public float fadeTime = 1f;                 // 크로스 페이드 시간
-    public float slideTime = 3f;                // 한 장 보여주는 시간 (클릭하면 바로 넘어감)
-    public float lineTime = 2.5f;               // 내레이션 한 줄 시간
+    public float fadeTime = 1f;
+    public float slideTime = 3f;
+    public float lineTime = 2.5f;
 
     [Header("게임 종료")]
-    public string endSceneName = "MainScene";   // 게임 시작 씬 이름
-    public bool clearInventory = true;          // 다시 시작할 때를 위해 인벤토리 비우기
+    public string endSceneName = "MainScene";
+    public bool clearInventory = true;
 
     private bool isReady;
     private bool isPlaying = false;
     private PlayerController player;
     private TextTyping textTyping;
+    private GameObject door;
+    private GameObject doorPrompt;
 
     private void Start()
     {
         GetComponent<Collider2D>().isTrigger = true;
-        isReady = startReady;
         player = MemoryUI.FindPlayer();
         textTyping = FindAnyObjectByType<TextTyping>(FindObjectsInactive.Include);
         if (cutsceneRoot != null) cutsceneRoot.SetActive(false);
+
+        door = GameObject.Find(doorObjectName);
+        if (door != null)
+        {
+            PickupItem pi = door.GetComponent<PickupItem>();
+            if (pi != null) doorPrompt = pi.PickupState;
+            if (exitPoint == null)
+            {
+                DoorAction da = door.GetComponent<DoorAction>();
+                if (da != null) exitPoint = da.targetDoor;
+            }
+        }
+
+        if (startReady) SetReady();
     }
 
+    // PhotoPopupEvent → On Finished 에서 호출 (퍼즐 + 사진 대사 끝 = 나갈 수 있음)
     public void SetReady()
     {
         isReady = true;
+
+        // 이제부터 문은 이 스크립트가 담당 (팀원 문 동작/대사와 겹치지 않게)
+        if (door != null)
+            foreach (Collider2D c in door.GetComponents<Collider2D>()) c.enabled = false;
+    }
+
+    private void Update()
+    {
+        if (!isReady || isPlaying || door == null || player == null) return;
+
+        bool canUse = !MemoryUI.IsOpen && !MemoryUI.IsStory() &&
+                      Vector2.Distance(player.transform.position, door.transform.position) <= doorRange;
+
+        if (doorPrompt != null && doorPrompt.activeSelf != canUse) doorPrompt.SetActive(canUse);
+
+        if (canUse && Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame)
+            StartCoroutine(ExitAndPlay());
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -69,9 +109,51 @@ public class EndingSequence : MonoBehaviour
         StartCoroutine(Play());
     }
 
+    // 문 F → 페이드 → 거실로 이동 → 엔딩
+    private IEnumerator ExitAndPlay()
+    {
+        isPlaying = true;
+        MemoryUI.IsOpen = true;
+        if (doorPrompt != null) doorPrompt.SetActive(false);
+        player.canMove = false;
+
+        bool dark = false;
+        if (FadeManager.Instance != null)
+        {
+            FadeManager.Instance.FadeOut(0.5f, DG.Tweening.Ease.InQuad, () => dark = true);
+            float t = 0f;
+            while (!dark && t < 2f) { t += Time.deltaTime; yield return null; }
+        }
+
+        if (exitPoint != null) MovePlayer(exitPoint.position);
+        yield return new WaitForSeconds(0.3f);
+
+        if (FadeManager.Instance != null)
+        {
+            FadeManager.Instance.FadeIn(0.5f, DG.Tweening.Ease.InQuad);
+            yield return new WaitForSeconds(0.6f);
+        }
+
+        yield return PlaySequence();
+    }
+
+    private void MovePlayer(Vector3 dest)
+    {
+        GameObject root = GameObject.Find("PlayerOB");
+        Transform target = root != null ? root.transform : player.transform;
+        Rigidbody2D rb = target.GetComponent<Rigidbody2D>();
+        if (rb != null) { rb.position = dest; rb.linearVelocity = Vector2.zero; }
+        target.position = new Vector3(dest.x, dest.y, target.position.z);
+    }
+
     private IEnumerator Play()
     {
         isPlaying = true;
+        yield return PlaySequence();
+    }
+
+    private IEnumerator PlaySequence()
+    {
         MemoryUI.IsOpen = true;
         if (player != null) player.canMove = false;
 
@@ -81,10 +163,14 @@ public class EndingSequence : MonoBehaviour
             textTyping.StartDialogue(enterDialogue);
             yield return null;
             if (textTyping.darkUIEffect != null)
-                yield return new WaitUntil(() => !textTyping.darkUIEffect.isStory);
+                while (textTyping.darkUIEffect.isStory)
+                {
+                    if (player != null) player.canMove = false;
+                    yield return null;
+                }
         }
 
-        // 2. 컷씬 시작 (검은 화면 페이드 인)
+        // 2. 컷씬 시작
         cutsceneRoot.SetActive(true);
         SetAlpha(layerA, 0f); SetAlpha(layerB, 0f);
         SetAlpha(whitePanel, 0f);
@@ -92,13 +178,13 @@ public class EndingSequence : MonoBehaviour
         SetAlpha(blackBackground, 0f);
         yield return Fade(blackBackground, 1f);
 
-        // 3. 1차 일러스트
+        // 3. 1차 일러스트 (없으면 흰 화면)
         lastShown = null;
-        foreach (Sprite s in firstIllustrations)
+        foreach (Sprite s in Slides(firstIllustrations, firstCount))
             yield return ShowSlideRoutine(s, lastShown);
         Image current = lastShown;
 
-        // 4. 하얀 배경 + 내레이션 (일러스트 위로)
+        // 4. 하얀 배경 + 내레이션
         if (whitePanel != null) whitePanel.transform.SetAsLastSibling();
         yield return Fade(whitePanel, 1f);
         if (current != null) SetAlpha(current, 0f);
@@ -106,7 +192,7 @@ public class EndingSequence : MonoBehaviour
         if (narrationText != null)
         {
             narrationText.transform.SetAsLastSibling();
-            foreach (string line in narrationLines)
+            foreach (string line in endingLines)
             {
                 narrationText.text = line;
                 yield return FadeText(1f);
@@ -115,16 +201,16 @@ public class EndingSequence : MonoBehaviour
             }
         }
 
-        // 5. 2차 일러스트 (하얀 배경 위로 크로스 페이드)
+        // 5. 2차 일러스트 (없으면 흰 화면)
         lastShown = null;
         bool first = true;
-        foreach (Sprite s in secondIllustrations)
+        foreach (Sprite s in Slides(secondIllustrations, secondCount))
         {
             yield return ShowSlideRoutine(s, lastShown);
             if (first) { SetAlpha(whitePanel, 0f); first = false; }
         }
 
-        // 6. 검게 페이드 아웃 → 게임 시작 씬
+        // 6. 페이드 아웃 → 게임 시작 씬
         if (lastShown != null) yield return Fade(lastShown, 0f);
 
         if (clearInventory && Inventory.Instance != null) Inventory.Instance.ClearItem();
@@ -133,19 +219,23 @@ public class EndingSequence : MonoBehaviour
         LoadingSceneController.LoadScene(endSceneName);
     }
 
+    // 그림이 하나도 없으면 count만큼 빈(=흰 화면) 슬라이드
+    private Sprite[] Slides(Sprite[] arr, int count)
+    {
+        if (arr != null && arr.Length > 0) return arr;
+        return new Sprite[Mathf.Max(0, count)];
+    }
+
     // ───────── 슬라이드 ─────────
     private Image lastShown;
 
     private IEnumerator ShowSlideRoutine(Sprite sprite, Image previous)
     {
-        if (sprite == null) yield break;
-
         Image next = (previous == layerA) ? layerB : layerA;
-        next.sprite = sprite;
+        next.sprite = sprite;                    // null이면 흰 화면
+        Color c = Color.white; c.a = 0f; next.color = c;
         next.transform.SetAsLastSibling();
-        SetAlpha(next, 0f);
 
-        // 크로스 페이드: 다음 장은 나타나고, 이전 장은 사라짐
         float t = 0f;
         float startPrev = previous != null ? previous.color.a : 0f;
         while (t < fadeTime)
