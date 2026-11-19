@@ -20,7 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/0. Scenes/PuzzleSceneheartmadince.unity
     guid: 4007fd1e624fb6c439ab5a46dff3d827
-  - enabled: 1
+  - enabled: 0
     path: Assets/0. Scenes/PuzzleScene.unity
     guid: 36b5bb78a02ca974fb8e115a9597c108
   - enabled: 1
