@@ -15,4 +15,5 @@ MonoBehaviour:
   dialogues:
   - .....
   - "\uC544.. \uC57D\uBA39\uB294\uAC78... \uAE4C\uBA39\uC5C8\uB124.."
-  - "(\uC8FC\uBC29\uC73C\uB85C \uAC00\uC790.)"
+  - "(\uC67C\uCABD\uC758 \uC8FC\uBC29\uC73C\uB85C \uAC00\uC790.)"
+  dialogueSettings: []

@@ -25,6 +25,10 @@ public class PerspectivePuzzleImage : ItemAction
     [Header("퍼즐 조각")]
     public PuzzlePieceImage[] pieces;
 
+    [Header("퍼즐 보상")]
+    public int rewardItemID = 1;    // 퍼즐을 풀면 받을 아이템 ID (기본 1 = 약)
+
+
     [Header("화면 메시지")]
     public TMP_Text messageText;
     public string solvedMessage = "퍼즐 완성! F를 눌러서 닫고 플레이어로 돌아가세요.";
@@ -94,7 +98,7 @@ public class PerspectivePuzzleImage : ItemAction
         if (isPuzzleActive && isSolved && Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame)
         {
             // 인벤토리에 아이템 추가
-            Inventory.Instance.AddItem(1, 1);
+            Inventory.Instance.AddItem(rewardItemID, 1);
 
             // 퍼즐 종료
             isPuzzleActive = false;

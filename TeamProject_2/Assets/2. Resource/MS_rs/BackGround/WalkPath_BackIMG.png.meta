@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -108,15 +108,41 @@ TextureImporter:
         width: 2306
         height: 1173
       alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline:
+      - - {x: -981, y: 341.5}
+        - {x: -830, y: 341.5}
+        - {x: -830, y: 573.5}
+        - {x: -981, y: 573.5}
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bbd9c11138f6b5920800000000000000
+      internalID: 2980098187154202043
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WalkPath_BackIMG_1
+      rect:
+        serializedVersion: 2
+        x: 1295
+        y: 0
+        width: 737
+        height: 1172
+      alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bbd9c11138f6b5920800000000000000
-      internalID: 2980098187154202043
+      spriteID: 8442aa47a96ee904d981a065e75ca08c
+      internalID: 246621397
       vertices: []
       indices: 
       edges: []
@@ -125,7 +151,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5b930ea4c34108d49b82e8865cbd8ef9
     internalID: 0
     vertices: []
     indices: 
@@ -136,6 +162,7 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       WalkPath_BackIMG_0: 2980098187154202043
+      WalkPath_BackIMG_1: 246621397
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: 4. DoorDialouge
   m_EditorClassIdentifier: Assembly-CSharp::DialogueDataSO
   dialogues:
-  - '!'
-  - "(\uB098\uAC00\uBCF4\uC790)"
+  - '!!'
+  - "(\uAC70\uC2E4\uB85C \uB098\uAC00\uBCF4\uC790)"
+  dialogueSettings: []

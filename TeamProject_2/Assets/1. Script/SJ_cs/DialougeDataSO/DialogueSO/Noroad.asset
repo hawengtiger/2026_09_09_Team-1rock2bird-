@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogueDataSO
   dialogues:
   - .....
-  - "\uB098\uB3C4 \uCC38... \uBB50\uD558\uB294 \uAC74\uC9C0.. \uC5EC\uAE34 \uC8FC\uBC29\uC774
-    \uC544\uB2C8\uC796\uC544..."
+  - "\uB098\uB3C4 \uCC38... \uBB50\uD558\uB294 \uAC74\uC9C0.. \uC8FC\uBC29\uC740
+    \uC67C\uCABD\uC774\uC9C0..."
+  dialogueSettings: []

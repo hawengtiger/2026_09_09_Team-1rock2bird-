@@ -83,26 +83,24 @@ public class InventoryUI : MonoBehaviour
 
         int itemID = (int)item.itemID;
 
-        // 약은 강아지 근처에서만 사용
+        // 약(ID 1)은 영롱이를 업은 상태에서만 사용 가능
         if (itemID == 1)
         {
             if (DogMedicineAction.Current == null ||
                 !DogMedicineAction.Current.CanUseMedicine())
             {
+                Debug.Log("영롱이를 업은 후에 약을 사용할 수 있습니다.");
                 return;
             }
         }
 
-        // 아이템 사용 성공 시
         if (Inventory.Instance.RemoveItem(itemID, 1))
         {
-            // 이번 프레임에는 일반 상호작용을 막기
             LastItemUseFrame = Time.frameCount;
 
-            // 아이템별 사용 함수 실행
             item.onUse?.Invoke();
 
-            Debug.Log($"아이템 사용 : {item.itemName}");
+            Debug.Log($"아이템 사용: {item.itemName}");
 
             if (item.itemCount <= 0)
             {
