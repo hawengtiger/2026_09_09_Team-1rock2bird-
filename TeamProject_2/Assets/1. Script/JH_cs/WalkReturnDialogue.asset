@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: WalkReturnDialogue
   m_EditorClassIdentifier: Assembly-CSharp::DialogueDataSO
   dialogues:
-  - "\uC544, \uC774\uC81C \uC601\uC591\uC81C \uC918\uC57C\uC9C0."
+  - "\uC544, \uC774\uC81C \uC601\uC591\uC81C \uC918\uC57C\uACA0\uB2E4."
+  - "(\uC8FC\uBC29\uC73C\uB85C \uAC00\uC790)"
+  dialogueSettings: []

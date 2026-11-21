@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogueDataSO
   dialogues:
   - ........
-  - "(..\uC138\uC0C1\uC5D0....)"
+  - "(...\uC138\uC0C1\uC5D0)"
   - "(\uC601\uB871\uC544...)"
   - ........
   dialogueSettings:

@@ -1,4 +1,3 @@
-
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +10,7 @@ public class InventorySlotUI : MonoBehaviour
 
     public Sprite normalImage;
     public Sprite selectedImage;
+    public GameObject TooltipImage;
 
     // 아이템 표시
     public void SetItem(Inventory.ItemData item)
@@ -37,10 +37,18 @@ public class InventorySlotUI : MonoBehaviour
     // 슬롯 선택 이미지 변경
     public void SetSelected(bool selected)
     {
+        if (TooltipImage != null)
+        {
+            TooltipImage.SetActive(selected);
+        }
+
         if (slotBackground == null)
+        {
             return;
+        }
 
         slotBackground.sprite =
             selected ? selectedImage : normalImage;
+
     }
 }

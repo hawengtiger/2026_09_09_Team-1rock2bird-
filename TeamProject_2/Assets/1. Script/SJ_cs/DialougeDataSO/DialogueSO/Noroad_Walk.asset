@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: Noroad_Walk
   m_EditorClassIdentifier: Assembly-CSharp::DialogueDataSO
   dialogues:
-  - "\uC0B0\uCC45\uBD80\uD130\uD558\uACE0 \uB118\uC5B4\uAC00\uC790."
+  - "\uC9C0\uAE08\uC740 \uB2E4\uB978 \uD560 \uC77C\uC774 \uC788\uC5B4."
+  dialogueSettings: []

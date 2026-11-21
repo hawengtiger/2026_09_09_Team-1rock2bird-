@@ -15,3 +15,5 @@ MonoBehaviour:
   dialogues:
   - "\uB610.. \uD638\uD761\uC774..."
   - "\uBE68\uB9AC \uBCD1\uC6D0 \uAC00\uC57C\uACA0\uB2E4.."
+  - "(\uD604\uAD00\uBB38\uC73C\uB85C \uB098\uAC00\uC790)"
+  dialogueSettings: []

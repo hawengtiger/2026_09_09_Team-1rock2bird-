@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogueDataSO
   dialogues:
   - ..............
-  - "...\uB124.. \uC54C\uACA0\uC2B5\uB2C8\uB2E4..."
+  - "...\uB124, \uC54C\uACA0\uC2B5\uB2C8\uB2E4..."
   dialogueSettings:
   - dialogueType: 1
     bubbleType: 1
