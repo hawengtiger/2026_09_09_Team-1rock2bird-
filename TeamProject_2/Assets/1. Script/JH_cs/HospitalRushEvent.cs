@@ -46,7 +46,8 @@ public class HospitalRushEvent : MonoBehaviour
     public Transform clinicPoint;               // 병원(진료소)에서 플레이어가 나타날 위치
     public Transform dogClinicPoint;            // (선택) 영롱이를 옮겨 둘 위치
 
-    [Header("끝났을 때 실행할 것 (선택)")]
+    [Header("실행할 것 (선택)")]
+    public UnityEvent onCarry;                  // 영롱이를 안았을 때 (전결 BGM 시작 등)
     public UnityEvent onArrivedClinic;
 
     private Step step = Step.Waiting;
@@ -182,6 +183,8 @@ public class HospitalRushEvent : MonoBehaviour
 
         if (playerController != null) playerController.canMove = true;
         step = Step.Carrying;
+
+        onCarry?.Invoke();
     }
 
     private IEnumerator MoveToClinic()
